@@ -2,6 +2,8 @@
 
 An HTML <input> element that provides completion based on a [Peggy](https://peggyjs.org/) PEG grammar.
 
+![PeggyInput](docs/peggy-input.gif)
+
 ## Usage
 
 Call `PeggyInput` with the jQuery input element and a javascript object with:
