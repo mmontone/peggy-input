@@ -1,7 +1,9 @@
-stxinput.js:
-	browserify script.js > stxinput.js
-stxinput.min.js: stxinput.js
-	uglifyjs stxinput.js > stxinput.min.js
+all: dist/peggy-input.js dist/peggy-input.min.js
+dist/peggy-input.js:
+	browserify peggy-input.js > dist/peggy-input.js
+dist/peggy-input.min.js: peggy-input.js
+	uglifyjs dist/peggy-input.js > dist/peggy-input.min.js
 clean:
-	rm -f stxinput.js
-rebuild: clean stxinput.js stxinput.min.js
+	rm -f dist/peggy-input.js
+	rm -f dist/peggy-input.min.js
+rebuild: clean all

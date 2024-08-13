@@ -9,7 +9,6 @@
   </head>
   <body>
     <input id="input" type="text" style="width: 400px;"></input>
-    <input id="input2" type="text" style="width: 400px;"></input>
 
     <div class="grid-container">
       <div class="grid-item">
@@ -23,7 +22,7 @@
         </textarea>
       </div>
     </div>
-    <script src="stxinput.js"></script>
+    <script src="dist/peggy-input.js"></script>
     <script type="text/javascript">
       var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone'];
       var groups = ['Management', 'Administration', 'Human Resources'];
@@ -59,16 +58,6 @@ name = word:word " " name:name { return word + " " + name } / word
               }
           }
       );
-
-      $('#input2').stxInput(
-          {
-              'grammar': grammar,
-              'completers': {
-                  'username' : users,
-                  'group' : groups
-              }
-          });
-
     </script>
   </body>
 </html>
