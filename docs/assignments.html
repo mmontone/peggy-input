@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <style>
+      .grid-container {
+          display: grid;
+          grid-template-columns: auto auto;
+      }
+    </style>
+  </head>
+  <body>
+    <input id="input" type="text" style="width: 400px;"></input>
+
+    <div class="grid-container">
+      <div class="grid-item">
+        <h4>Grammar</h4>
+        <textarea id="grammar" style="width: 500px; height:500px;">
+        </textarea>
+      </div>
+      <div class="grid-item">
+        <h4>Result</h4>
+        <textarea id="result" style="width: 500px; height: 500px;">
+        </textarea>
+      </div>
+    </div>
+    <script src="../dist/peggy-input.js"></script>
+    <script type="text/javascript">
+      var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone'];
+      var groups = ['Management', 'Administration', 'Human Resources'];
+      var grammar = function (stxInput) {
+          return `start = assignment
+assignmentgroup = "everyone" / groupmembers
+assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / groupmembers
+assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
+groupmembers = "members of " groups:groups { return {'membersOf':groups} }
+groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
+group "group" = w1:word " " w2:word &{ let w = w1 + " " + w2; return _.includes(groups, w); } { return w1 + " " + w2 } / w:word &{ return _.includes(groups, w) } { return w }
+user = "@" username:username { return {'user':username} }
+username "username" = username:name &{${stxInput}.setPartialInput(username); return _.includes(users, username)} { return username }
+WS = [ \t]*
+word = $[a-z]i+
+name = word:word " " name:name { return word + " " + name } / word
+`;
+      };
+      // Fill in grammar textarea
+      $('#grammar').html(grammar('stxInput'));
+
+      StxInput(
+          $('#input'),
+          {
+              'grammar': grammar,
+              'completers': {
+                  'username' : users,
+                  'group' : groups
+              },
+              'resultHandler': function (result) {
+                  $('#result').html(JSON.stringify(result));
+              }
+          }
+      );
+    </script>
+  </body>
+</html>
