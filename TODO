@@ -1,0 +1,7 @@
+- Improve completion of certain lists (for instance, completion of users and groups as user types. Hint: look at partialInput).
+- Consider dropping JQuery and use native JS ?
+- Documentation. Demo page + tutorial. Test page (update grammar from test area).
+- Choose a name for the library:
+   * peggy-input
+   * syntax-directed-input
+   * other?

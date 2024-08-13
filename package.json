@@ -1,0 +1,16 @@
+{
+  "name": "completion-widget",
+  "version": "1.0.0",
+  "description": "Widget that supports completion from a grammar",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mariano Montone",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.7.1",
+    "lodash": "^4.17.21",
+    "peggy": "^4.0.3"
+  }
+}
