@@ -45,7 +45,7 @@ name = word:word " " name:name { return word + " " + name } / word
       // Fill in grammar textarea
       $('#grammar').html(grammar('stxInput'));
 
-      StxInput(
+      PeggyInput(
           $('#input'),
           {
               'grammar': grammar,

@@ -36,14 +36,14 @@ function genName(name) {
     return name + nameId++;
 }
 
-function StxInput(input, opts) {
+function PeggyInput(input, opts) {
     this.partialInput = null;
     this.value = null;
     this.init(input, opts);
 }
 
 
-StxInput.prototype.complete = function (input) {
+PeggyInput.prototype.complete = function (input) {
     try {
         this.syntaxErrorMsg.html('');
         this.value = this.parser.parse(input);
@@ -114,7 +114,7 @@ StxInput.prototype.complete = function (input) {
     return {error:null, completions: []};
 };
 
-StxInput.prototype.fillCompletions = function (completions) {
+PeggyInput.prototype.fillCompletions = function (completions) {
     var html = '';
     completions.forEach(function (completion) {
         html += `<option value="${completion}">${completion}</option>`;
@@ -122,7 +122,7 @@ StxInput.prototype.fillCompletions = function (completions) {
     this.completionsArea.html(html);
 };
 
-StxInput.prototype.updateCompletions = function () {
+PeggyInput.prototype.updateCompletions = function () {
     this.completionsArea.html('');
     var inputText = this.input.val();
     var completions = this.complete(inputText).completions;
@@ -134,7 +134,7 @@ StxInput.prototype.updateCompletions = function () {
     }
 };
 
-StxInput.prototype.setPartialInput = function (pinput) {
+PeggyInput.prototype.setPartialInput = function (pinput) {
     // For setting the partial input, check that the input matches
     // input value at cursor position (what the user is entering).
     let inputStr = this.input.val().substring(0, this.input.getCursorPosition());
@@ -145,13 +145,13 @@ StxInput.prototype.setPartialInput = function (pinput) {
     }
 };
 
-StxInput.prototype.insertCompletion = function (completion) {
+PeggyInput.prototype.insertCompletion = function (completion) {
     let cursorPosition = this.input.getCursorPosition();
     this.input.val(insertString(this.input.val(), completion, cursorPosition));
     this.input.setCursorPosition(cursorPosition + completion.length);
 };
 
-StxInput.prototype.keyUpHandler = function (ev) {
+PeggyInput.prototype.keyUpHandler = function (ev) {
     //console.log(ev.key);
     switch(ev.key) {
     case 'ArrowDown':
@@ -187,7 +187,7 @@ StxInput.prototype.keyUpHandler = function (ev) {
     }
 };
 
-StxInput.prototype.keyDownHandler = function (ev) {
+PeggyInput.prototype.keyDownHandler = function (ev) {
     let selected = this.completionsArea.children('option:selected');
     switch(ev.key) {
     case 'ArrowDown':
@@ -213,7 +213,7 @@ StxInput.prototype.keyDownHandler = function (ev) {
     }
 };
 
-StxInput.prototype.init = function (inputEl, opts) {
+PeggyInput.prototype.init = function (inputEl, opts) {
     if (typeof opts.grammar === 'string') {
         this.grammar = opts.grammar;
     }
@@ -242,13 +242,13 @@ StxInput.prototype.init = function (inputEl, opts) {
 };
 
 // Exports
-window.StxInput = function(inputEl, opts) {
-    return new StxInput(inputEl, opts);
+window.PeggyInput = function(inputEl, opts) {
+    return new PeggyInput(inputEl, opts);
 }
 
 // JQuery wrapper
 
 $.fn.stxInput = function (opts) {
     var inst = this.get(0);
-    return new StxInput($(inst), opts);
+    return new PeggyInput($(inst), opts);
 };
