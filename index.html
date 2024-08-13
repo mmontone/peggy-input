@@ -26,7 +26,7 @@
     <script type="text/javascript">
       var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone'];
       var groups = ['Management', 'Administration', 'Human Resources'];
-      var grammar = function (stxInput) {
+      var grammar = function (peggyInput) {
           return `start = assignment
 assignmentgroup = "everyone" / groupmembers
 assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
@@ -36,7 +36,7 @@ groupmembers = "members of " groups:groups { return {'membersOf':groups} }
 groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
 group "group" = w1:word " " w2:word &{ let w = w1 + " " + w2; return _.includes(groups, w); } { return w1 + " " + w2 } / w:word &{ return _.includes(groups, w) } { return w }
 user = "@" username:username { return {'user':username} }
-username "username" = username:name &{${stxInput}.setPartialInput(username); return _.includes(users, username)} { return username }
+username "username" = username:name &{${peggyInput}.setPartialInput(username); return _.includes(users, username)} { return username }
 WS = [ \t]*
 word = $[a-z]i+
 name = word:word " " name:name { return word + " " + name } / word
