@@ -1,6 +1,7 @@
 $ = require('jquery');
 _ = require('lodash');
 peggy = require('peggy');
+completerblock = require('./completerblock');
 
 // Extension for getting cursor position in input field
 $.fn.getCursorPosition = function() {
@@ -41,7 +42,6 @@ function PeggyInput(input, opts) {
     this.value = null;
     this.init(input, opts);
 }
-
 
 PeggyInput.prototype.complete = function (input) {
     try {
@@ -213,15 +213,17 @@ PeggyInput.prototype.keyDownHandler = function (ev) {
     }
 };
 
+PeggyInput.prototype._grammarCompleter = function (completerName, value) {
+    this.setPartialInput(value);
+    return _.includes(this.completers[completerName], value);
+};
+
 PeggyInput.prototype.init = function (inputEl, opts) {
-    if (typeof opts.grammar === 'string') {
-        this.grammar = opts.grammar;
-    }
-    else {
-        let name = genName('stxInput');
-        window[name] = this;
-        this.grammar = opts.grammar(name);
-    }
+    
+    let name = genName('peggyInput');
+    window[name] = this;
+    this.grammar = completerblock.parse(opts.grammar).replaceAll('peggyInput', name);
+    console.log(this.grammar);
 
     this.completers = opts.completers;
     this.resultHandler = opts.resultHandler;

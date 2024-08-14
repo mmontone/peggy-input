@@ -8,7 +8,7 @@ An HTML <input> element that provides completion based on a [Peggy](https://pegg
 
 Call `PeggyInput` with the jQuery input element and a javascript object with:
 
-- grammar: The Peggy grammar to use for completion.
+- grammar: A function that takes *the name* of an instance of PeggyInput and returns a Peggy grammar to use for completion. The name of the PeggyInput instance can be used in the grammar source to access a PeggyInput instance properties and methods.
 - completers: A javascript object to use for matching completions.
 
 ### Examples
@@ -32,9 +32,9 @@ assignee = "everyone" / user / groupmembers
 assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
 groupmembers = "members of " groups:groups { return {'membersOf':groups} }
 groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
-group "group" = w1:word " " w2:word &{ let w = w1 + " " + w2; return _.includes(groups, w); } { return w1 + " " + w2 } / w:word &{ return _.includes(groups, w) } { return w }
+group "group" = w1:word " " w2:word &{ let w = w1 + " " + w2; return _.includes(${peggyInput}.completers.group, w); } { return w1 + " " + w2 } / w:word &{ return _.includes(${peggyInput}.completers.group, w) } { return w }
 user = "@" username:username { return {'user':username} }
-username "username" = username:name &{${peggyInput}.setPartialInput(username); return _.includes(users, username)} { return username }
+username "username" = username:name &{${peggyInput}.setPartialInput(username); return _.includes(${peggyInput}.completers.username, username)} { return username }
 WS = [ \t]*
 word = $[a-z]i+
 name = word:word " " name:name { return word + " " + name } / word
@@ -66,6 +66,3 @@ PeggyInput($('#input'),
           }
       );
 ```
-
-
-
