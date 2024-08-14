@@ -10,3 +10,5 @@ clean:
 	rm -f dist/peggy-input.js
 	rm -f dist/peggy-input.min.js
 rebuild: clean all
+start-demo:
+	npx http-server docs
