@@ -8,8 +8,32 @@ An HTML <input> element that provides completion based on a [Peggy](https://pegg
 
 Call `PeggyInput` with the jQuery input element and a javascript object with:
 
-- grammar: A function that takes *the name* of an instance of PeggyInput and returns a Peggy grammar to use for completion. The name of the PeggyInput instance can be used in the grammar source to access a PeggyInput instance properties and methods.
+- grammar: A Peggy grammar with completion blocks for some of the rules.
 - completers: A javascript object to use for matching completions.
+
+### Completion blocks
+
+Peggy supports two types of blocks:
+1. Action blocks for processing rules' components and returning a Javascript result for them. They have the syntax: `{ <code> }`.
+2. Predicate blocks for predicates in rules. They have syntax: `&{ <code> }` and `!{ <code> }`.
+
+`peggy-input` introduces a new type of block, a completion block. 
+It has syntax: `@{ <completerName> [,<variableName> }`.
+That means complete the current rule using the completer named `completerName` passed in the `PeggyInput` initialization.
+
+For instance, a rule for user completion looks like:
+```
+user = "@" username:username { return {'user':username} }
+username "username" = username:name @{ username } { return username }
+```
+
+The `username` rule uses a completion block `@{ username }` meaning "complete from the username completion list".
+When `PeggyInput` is initialized it needs to be passed the `username` completion list: 
+```javascript
+'completers': {
+     'username' : ['Peter', 'John', 'Daniel']
+}
+```
 
 ### Examples
 
@@ -24,22 +48,20 @@ The language has expressions like:
 Specify the Peggy grammar:
 
 ```javascript
-var grammar = function (peggyInput) {
-          return `start = assignment
+start = assignment
 assignmentgroup = "everyone" / groupmembers
 assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
 assignee = "everyone" / user / groupmembers
 assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
 groupmembers = "members of " groups:groups { return {'membersOf':groups} }
 groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
-group "group" = w1:word " " w2:word &{ let w = w1 + " " + w2; return _.includes(${peggyInput}.completers.group, w); } { return w1 + " " + w2 } / w:word &{ return _.includes(${peggyInput}.completers.group, w) } { return w }
+spacedgroupname = w1:word " " w2:word { return w1 + " " + w2 }
+group "group" =  group:spacedgroupname @{ group } / group:word @{ group }
 user = "@" username:username { return {'user':username} }
-username "username" = username:name &{${peggyInput}.setPartialInput(username); return _.includes(${peggyInput}.completers.username, username)} { return username }
+username "username" = username:name @{ username } { return username }
 WS = [ \t]*
 word = $[a-z]i+
 name = word:word " " name:name { return word + " " + name } / word
-`;
-      };
 ```
 
 Specify the completers. We need to complete for users and groups:
@@ -66,3 +88,15 @@ PeggyInput($('#input'),
           }
       );
 ```
+
+### How it works
+
+The algorithm is based on the following: try to parse the input using the given PEG grammar. When an error ocurrs, that error contains the expected input at point. The expected input is used to provide the completions.
+
+### Development
+
+Run `make`, `make clean`, `make rebuild`.
+
+### Demo
+
+Run `make start-demo`.
