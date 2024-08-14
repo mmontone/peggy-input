@@ -22,7 +22,7 @@
         </textarea>
       </div>
     </div>
-    <script src="../dist/peggy-input.js"></script>
+    <script src="peggy-input.js"></script>
     <script type="text/javascript">
       var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone'];
       var groups = ['Management', 'Administration', 'Human Resources'];
@@ -45,19 +45,24 @@ name = word:word " " name:name { return word + " " + name } / word
       // Fill in grammar textarea
       $('#grammar').html(grammar('peggyInput'));
 
-      PeggyInput(
-          $('#input'),
-          {
+      fetch('/users.json')
+        .then(res => res.json())
+        .then(data => _.map(data.results, u => u.name.first + ' ' + u.name.last))
+        .then(usernames => 
+           PeggyInput(
+           $('#input'),
+           {
               'grammar': grammar,
               'completers': {
-                  'username' : users,
+                  'username' : usernames,
                   'group' : groups
               },
               'resultHandler': function (result) {
                   $('#result').html(JSON.stringify(result));
               }
           }
-      );
+           )
+        );
     </script>
   </body>
 </html>
