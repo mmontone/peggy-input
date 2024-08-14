@@ -24,19 +24,17 @@
     </div>
     <script src="peggy-input.js"></script>
     <script type="text/javascript">
-      var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone'];
-      var groups = ['Management', 'Administration', 'Human Resources'];
       var grammar = function (peggyInput) {
           return `start = assignment
-assignmentgroup = "everyone" / groupmembers
-assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
-assignee = "everyone" / user / groupmembers
+assignmentcity = "everyone" / citymembers
+assignment = g:assignmentcity " " "but " as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / citymembers
 assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
-groupmembers = "members of " groups:groups { return {'membersOf':groups} }
-groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
-group "group" = w1:word " " w2:word &{ let w = w1 + " " + w2; return _.includes(groups, w); } { return w1 + " " + w2 } / w:word &{ return _.includes(groups, w) } { return w }
+citymembers = "citizens of " cities:cities { return {'membersOf':cities} }
+cities = g:city WS "," WS gs:cities { return [g].concat(gs) } / g:city { return [g] }
+city "city" = w1:word " " w2:word &{ let w = w1 + " " + w2; return _.includes(${peggyInput}.completers.city, w); } { return w1 + " " + w2 } / w:word &{ return _.includes(${peggyInput}.completers.city, w) } { return w }
 user = "@" username:username { return {'user':username} }
-username "username" = username:name &{${peggyInput}.setPartialInput(username); return _.includes(users, username)} { return username }
+username "username" = username:name &{${peggyInput}.setPartialInput(username); return _.includes(${peggyInput}.completers.username, username)} { return username }
 WS = [ \t]*
 word = $[a-z]i+
 name = word:word " " name:name { return word + " " + name } / word
@@ -47,15 +45,14 @@ name = word:word " " name:name { return word + " " + name } / word
 
       fetch('/users.json')
         .then(res => res.json())
-        .then(data => _.map(data.results, u => u.name.first + ' ' + u.name.last))
-        .then(usernames => 
+        .then(data => 
            PeggyInput(
            $('#input'),
            {
               'grammar': grammar,
               'completers': {
-                  'username' : usernames,
-                  'group' : groups
+                  'username' : _.sortBy(_.map(data.results, u => u.name.first + ' ' + u.name.last)),
+                  'city' : _.sortedUniq(_.map(data.results, u => u.location.city))
               },
               'resultHandler': function (result) {
                   $('#result').html(JSON.stringify(result));
