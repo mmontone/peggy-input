@@ -1,6 +1,6 @@
 # PEGGY INPUT
 
-An HTML <input> element that provides completion based on a [Peggy](https://peggyjs.org/) PEG grammar.
+An HTML input element that provides syntax directed editing and completion based on a [Peggy](https://peggyjs.org/) PEG grammar.
 
 ![PeggyInput](docs/peggy-input.gif)
 
