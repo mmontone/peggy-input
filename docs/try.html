@@ -14,6 +14,20 @@
       <div class="grid-item">
         <h4>Grammar</h4>
         <textarea id="grammar" style="width: 500px; height:500px;">
+start = assignment
+assignmentgroup = "everyone" / groupmembers
+assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / groupmembers
+assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
+groupmembers = "members of " groups:groups { return {'membersOf':groups} }
+groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
+spacedgroupname = w1:word " " w2:word { return w1 + " " + w2 }
+group "group" =  group:spacedgroupname @{ group } / group:word @{ group }
+user = "@" username:username { return {'user':username} }
+username "username" = username:name @{ username } { return username }
+WS = [ \t]*
+word = $[a-z]i+
+name = word:word " " name:name { return word + " " + name } / word
         </textarea>
       </div>
       <div class="grid-item">
@@ -25,6 +39,14 @@
         <div>
           <h4>Initialize</h4>
           <textarea id="initialize" style="width: 500px; height: 200px;">
+            var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone'];
+            var groups = ['Management', 'Administration', 'Human Resources'];
+            ({
+              'completers': {
+                  'username' : users,
+                  'group' : groups
+              }
+            })
           </textarea>
         </div>
         <div><button id="apply" class="btn">Apply</button></div>
@@ -32,40 +54,15 @@
     </div>
     <script src="peggy-input.js"></script>
     <script type="text/javascript">
-      var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone'];
-      var groups = ['Management', 'Administration', 'Human Resources'];
-      var grammar = function (peggyInput) {
-          return `start = assignment
-assignmentgroup = "everyone" / groupmembers
-assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
-assignee = "everyone" / user / groupmembers
-assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
-groupmembers = "members of " groups:groups { return {'membersOf':groups} }
-groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
-group "group" = w1:word " " w2:word &{ let w = w1 + " " + w2; return _.includes(groups, w); } { return w1 + " " + w2 } / w:word &{ return _.includes(groups, w) } { return w }
-user = "@" username:username { return {'user':username} }
-username "username" = username:name &{${peggyInput}.setPartialInput(username); return _.includes(users, username)} { return username }
-WS = [ \t]*
-word = $[a-z]i+
-name = word:word " " name:name { return word + " " + name } / word
-`;
-      };
-      // Fill in grammar textarea
-      $('#grammar').html(grammar('peggyInput'));
-
-      PeggyInput(
-          $('#input'),
-          {
-              'grammar': grammar,
-              'completers': {
-                  'username' : users,
-                  'group' : groups
-              },
-              'resultHandler': function (result) {
+      $('#apply').click(function () {
+          $('#input').replaceWith('<input id="input" type="text" style="width: 400px;"></input>');
+          let options = eval($('#initialize').val());
+          options.grammar = $('#grammar').val();
+          window.peggyInput = PeggyInput($('#input'), options);
+          window.peggyInput.resultHandler = function (result) {
                   $('#result').html(JSON.stringify(result));
-              }
-          }
-      );
+          };
+      });
     </script>
   </body>
 </html>
