@@ -33,8 +33,9 @@ name = word:word " " name:name { return word + " " + name } / word
       <div class="grid-item">
         <div>
           <h4>Result</h4>
-          <textarea id="result" style="width: 500px; height: 200px;">
+          <textarea id="result" style="width: 400px; height: 200px;">
           </textarea>
+          <div id="error" style="color:red;"></div>
         </div>
         <div>
           <h4>Initialize</h4>
@@ -56,12 +57,18 @@ name = word:word " " name:name { return word + " " + name } / word
     <script type="text/javascript">
       $('#apply').click(function () {
           $('#input').replaceWith('<input id="input" type="text" style="width: 400px;"></input>');
-          let options = eval($('#initialize').val());
-          options.grammar = $('#grammar').val();
-          window.peggyInput = PeggyInput('#input', options);
-          window.peggyInput.resultHandler = function (result) {
+          try {
+              $('#error').text('');
+              let options = eval($('#initialize').val());
+              options.grammar = $('#grammar').val();
+              window.peggyInput = PeggyInput('#input', options);
+              window.peggyInput.resultHandler = function (result) {
                   $('#result').html(JSON.stringify(result));
-          };
+              };
+          }
+          catch (e) {
+              $('#error').text(e.message);
+          }
       });
     </script>
   </body>
