@@ -13,7 +13,7 @@
     <div class="grid-container">
       <div class="grid-item">
         <h4>Grammar</h4>
-        <textarea id="grammar" style="width: 500px; height:500px;">
+        <textarea id="grammar" style="width: 500px; height:400px;">
 start = assignment
 assignmentgroup = "everyone" / groupmembers
 assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
@@ -29,13 +29,13 @@ WS = [ \t]*
 word = $[a-z]i+
 name = word:word " " name:name { return word + " " + name } / word
         </textarea>
+        <div id="error" style="color:red;"></div>
       </div>
       <div class="grid-item">
         <div>
           <h4>Result</h4>
-          <textarea id="result" style="width: 400px; height: 200px;">
+          <textarea id="result" style="width: 500px; height: 200px;">
           </textarea>
-          <div id="error" style="color:red;"></div>
         </div>
         <div>
           <h4>Initialize</h4>
@@ -55,7 +55,7 @@ name = word:word " " name:name { return word + " " + name } / word
     </div>
     <script src="peggy-input.js"></script>
     <script type="text/javascript">
-      $('#apply').click(function () {
+      function apply () {
           $('#input').replaceWith('<input id="input" type="text" style="width: 400px;"></input>');
           try {
               $('#error').text('');
@@ -69,7 +69,10 @@ name = word:word " " name:name { return word + " " + name } / word
           catch (e) {
               $('#error').text(e.message);
           }
-      });
+      }
+      
+      $('#apply').click(apply);
+      apply();
     </script>
   </body>
 </html>
