@@ -2,9 +2,9 @@ all: completerblock.js dist/peggy-input.js dist/peggy-input.min.js docs/peggy-in
 completerblock.js:
 	npx peggy completerblock.peggy
 dist/peggy-input.js:
-	browserify peggy-input.js > dist/peggy-input.js
+	npx browserify peggy-input.js > dist/peggy-input.js
 dist/peggy-input.min.js: peggy-input.js
-	uglifyjs dist/peggy-input.js > dist/peggy-input.min.js
+	npx uglifyjs dist/peggy-input.js > dist/peggy-input.min.js
 docs/peggy-input.js: dist/peggy-input.js
 	cp dist/peggy-input.js docs/peggy-input.js
 clean:
