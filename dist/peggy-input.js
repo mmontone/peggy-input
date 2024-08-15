@@ -28737,8 +28737,9 @@ PeggyInput.prototype._grammarCompleter = function (completerName, value) {
     return _.includes(this.completers[completerName], value);
 };
 
-PeggyInput.prototype.init = function (inputEl, opts) {
-    
+PeggyInput.prototype.init = function (inputSel, opts) {
+
+    let inputEl = $(inputSel);
     let name = genName('peggyInput');
     window[name] = this;
     this.grammar = completerblock.parse(opts.grammar).replaceAll('peggyInput', name);

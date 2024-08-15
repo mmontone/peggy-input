@@ -47,7 +47,7 @@ name = word:word " " name:name { return word + " " + name } / word
       $('#grammar').html(grammar);
 
       PeggyInput(
-          $('#input'),
+          '#input',
           {
               'grammar': grammar,
               'completers': {

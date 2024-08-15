@@ -58,7 +58,7 @@ name = word:word " " name:name { return word + " " + name } / word
           $('#input').replaceWith('<input id="input" type="text" style="width: 400px;"></input>');
           let options = eval($('#initialize').val());
           options.grammar = $('#grammar').val();
-          window.peggyInput = PeggyInput($('#input'), options);
+          window.peggyInput = PeggyInput('#input', options);
           window.peggyInput.resultHandler = function (result) {
                   $('#result').html(JSON.stringify(result));
           };

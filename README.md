@@ -64,21 +64,18 @@ word = $[a-z]i+
 name = word:word " " name:name { return word + " " + name } / word
 ```
 
-Specify the completers. We need to complete for users and groups:
-
-```javascript
-var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone', 'Fernando Berretti'];
-var groups = ['Management', 'Administration', 'Human Resources'];
-```
-
-Instantiate the HTML input element:
+Create an HTML input element:
 
 ```html
 <input id="input" type="text" style="width: 400px;"></input>
 ```
 
+Instantiate a PeggyInput passing the grammar and completers as options:
+
 ```javascript
-PeggyInput($('#input'),
+var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone', 'Fernando Berretti'];
+var groups = ['Management', 'Administration', 'Human Resources'];
+PeggyInput('#input',
           {
               'grammar': grammar,
               'completers': {
