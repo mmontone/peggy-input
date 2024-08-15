@@ -60,7 +60,7 @@ name = word:word " " name:name { return word + " " + name } / word
           let urlParams = new URLSearchParams(window.location.search);
           let loadFile = urlParams.get('load');
           if (loadFile) {
-              fetch("./" + loadFile)
+              return fetch("./" + loadFile)
                   .then(response => response.text())
                   .then(str => new DOMParser().parseFromString(str, "text/xml"))
                   .then(xml => {
@@ -95,8 +95,7 @@ name = word:word " " name:name { return word + " " + name } / word
       
       $('#apply').click(apply);
 
-      load();
-      apply();
+      Promise.resolve(load()).then(apply);
     </script>
   </body>
 </html>

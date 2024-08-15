@@ -28742,9 +28742,9 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     let inputEl = $(inputSel);
     let name = genName('peggyInput');
     window[name] = this;
+    console.log(opts.grammar);
     this.grammar = completerblock.parse(opts.grammar).replaceAll('peggyInput', name);
-    console.log(this.grammar);
-
+    
     this.completers = opts.completers;
     this.resultHandler = opts.resultHandler;
     this.parser = peggy.generate(this.grammar);
