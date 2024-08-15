@@ -1,0 +1,33 @@
+<pidata>
+  <grammar>
+    <![CDATA[
+start = assignment
+assignmentcity = "everyone" / citymembers
+assignment = g:assignmentcity " " "but " as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / citymembers
+assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
+citymembers = "citizens of " cities:cities { return {'membersOf':cities} }
+cities = g:city WS "," WS gs:cities { return [g].concat(gs) } / g:city { return [g] }
+city "city" = city:word @{ city }
+user = "@" username:username { return {'user':username} }
+username "username" = username:name @{ username } { return username }
+WS = [ \t]*
+word = $[a-z]i+
+name = word:word " " name:name { return word + " " + name } / word
+    ]]>
+  </grammar>
+  <initialize>
+    <![CDATA[
+       fetch('/users.json')
+                   .then(res => res.json())
+                   .then(data => {
+            return ({
+              'completers': {
+                  'username' : _.sortBy(_.map(data.results, u => u.name.first + ' ' + u.name.last)),
+                  'city' : _.sortedUniq(_.map(data.results, u => u.location.city))
+                  }
+               })
+             });
+    ]]>
+  </initialize>
+</pidata>

@@ -55,16 +55,38 @@ name = word:word " " name:name { return word + " " + name } / word
     </div>
     <script src="peggy-input.js"></script>
     <script type="text/javascript">
+
+      function load() {
+          let urlParams = new URLSearchParams(window.location.search);
+          let loadFile = urlParams.get('load');
+          if (loadFile) {
+              fetch("./" + loadFile)
+                  .then(response => response.text())
+                  .then(str => new DOMParser().parseFromString(str, "text/xml"))
+                  .then(xml => {
+                      console.log('Loading', xml);
+                      $('#grammar').val(xml.querySelector('grammar').textContent);
+                      $('#initialize').val(xml.querySelector('initialize').textContent);
+                  });
+          }
+      }
+      
       function apply () {
           $('#input').replaceWith('<input id="input" type="text" style="width: 400px;"></input>');
           try {
               $('#error').text('');
-              let options = eval($('#initialize').val());
-              options.grammar = $('#grammar').val();
-              window.peggyInput = PeggyInput('#input', options);
-              window.peggyInput.resultHandler = function (result) {
-                  $('#result').html(JSON.stringify(result));
-              };
+              Promise.resolve(eval($('#initialize').val()))
+                  .then(options =>
+                      {
+                          console.log('optoins', options);
+                          options.grammar = $('#grammar').val();
+                          console.log('Initializing with:', options);
+                          window.peggyInput = PeggyInput('#input', options);
+                          window.peggyInput.resultHandler = function (result) {
+                              $('#result').html(JSON.stringify(result));
+                          };
+                      })
+                  .catch(e => $('#error').text(e.message));
           }
           catch (e) {
               $('#error').text(e.message);
@@ -72,6 +94,8 @@ name = word:word " " name:name { return word + " " + name } / word
       }
       
       $('#apply').click(apply);
+
+      load();
       apply();
     </script>
   </body>
