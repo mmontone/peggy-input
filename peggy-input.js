@@ -2,6 +2,7 @@ const $ = require('jquery');
 const _ = require('lodash');
 const peggy = require('peggy');
 const completerblock = require('./completerblock');
+const loglevel = require('loglevel');
 
 // Extension for getting cursor position in input field
 $.fn.getCursorPosition = function() {
@@ -38,9 +39,10 @@ function genName(name) {
 }
 
 function PeggyInput(input, opts) {
+    this.logger = loglevel.getLogger('peggy-input');
     this.partialInput = null;
     this.value = null;
-    this.init(input, opts);
+    this.init(input, opts);    
 }
 
 PeggyInput.prototype.complete = function (input) {
@@ -52,7 +54,7 @@ PeggyInput.prototype.complete = function (input) {
         }
     }
     catch(syntaxError) {
-        console.log({syntaxError});
+        this.logger.debug({syntaxError});
         var completions = [];
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
         this.syntaxErrorMsg.html(syntaxError.message);
@@ -67,7 +69,7 @@ PeggyInput.prototype.complete = function (input) {
             }
         });
 
-        console.log('Completions', completions);
+        this.logger.debug('Completions', completions);
 
         // If completions match a completer, expand the completion list using the completer
         /*if (completions.length == 1) {
@@ -89,7 +91,7 @@ PeggyInput.prototype.complete = function (input) {
 
         completions = expandedCompletions;
 
-        console.log('Expanded Completions', completions);
+        this.logger.debug('Expanded Completions', completions);
 
         // Filter the possible options based on what was found unparsed
         // in the syntax error:
@@ -99,7 +101,7 @@ PeggyInput.prototype.complete = function (input) {
             }.bind(this));
         }
 
-        console.log('Partial input', this.partialInput);
+        this.logger.debug('Partial input', this.partialInput);
 
         if (this.partialInput) {
             completions = completions.filter(function (completion) {
@@ -140,7 +142,7 @@ PeggyInput.prototype.setPartialInput = function (pinput) {
     let inputStr = this.input.val().substring(0, this.input.getCursorPosition());
     let userStr = inputStr.substring(inputStr.length - pinput.length, inputStr.length);
     if (pinput == userStr) {
-        console.log('Setting partial input:', pinput);
+        this.logger.debug('Setting partial input:', pinput);
         this.partialInput = pinput;
     }
 };
@@ -152,7 +154,7 @@ PeggyInput.prototype.insertCompletion = function (completion) {
 };
 
 PeggyInput.prototype.keyUpHandler = function (ev) {
-    //console.log(ev.key);
+    //this.logger.debug(ev.key);
     switch(ev.key) {
     case 'ArrowDown':
         break;
@@ -214,7 +216,7 @@ PeggyInput.prototype.keyDownHandler = function (ev) {
 };
 
 PeggyInput.prototype._grammarCompleter = function (completerName, value) {
-    console.debug('Completing', completerName, value, _.includes(this.completers[completerName], value));
+    this.logger.debug('Completing', completerName, value, _.includes(this.completers[completerName], value));
     this.setPartialInput(value);
     return _.includes(this.completers[completerName], value);
 };
@@ -224,7 +226,7 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     let inputEl = $(inputSel);
     let name = genName('peggyInput');
     window[name] = this;
-    console.log(opts.grammar);
+    this.logger.debug(opts.grammar);
     this.grammar = completerblock.parse(opts.grammar).replaceAll('peggyInput', name);
     
     this.completers = opts.completers;

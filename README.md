@@ -96,6 +96,10 @@ The algorithm is based on the following: try to parse the input using the given 
 
 Run `make`, `make clean`, `make rebuild`.
 
+#### Debug logs
+
+`peggyInputInstance.logger.setLevel('debug');`
+
 ### Demo
 
 `npm install`
