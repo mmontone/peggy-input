@@ -1,7 +1,7 @@
-$ = require('jquery');
-_ = require('lodash');
-peggy = require('peggy');
-completerblock = require('./completerblock');
+const $ = require('jquery');
+const _ = require('lodash');
+const peggy = require('peggy');
+const completerblock = require('./completerblock');
 
 // Extension for getting cursor position in input field
 $.fn.getCursorPosition = function() {

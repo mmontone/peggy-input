@@ -8,6 +8,8 @@
     </style>
   </head>
   <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" referrerpolicy="no-referrer"></script>
     <div><input id="name" style="width: 400px;border: none;font-size:20px; font-weight: bold;" placeholder="Example name"></input></div>
     <div>
       <textarea id="description" style="height: 100px; width: 400px;border:none;" placeholder="Example description">
@@ -42,7 +44,6 @@
     </div>
     <script src="peggy-input.js"></script>
     <script type="text/javascript">
-
       function save(filename, data, contentType) {
           const blob = new Blob([data], {type: contentType});
           if(window.navigator.msSaveOrOpenBlob) {
@@ -120,10 +121,12 @@ ${initialize}
           }
       }
 
-      $('#apply').click(apply);
-      $('#download').click(download);
-
-      Promise.resolve(load()).then(apply);
+      $(function () {
+          $('#apply').click(apply);
+          $('#download').click(download);
+          Promise.resolve(load()).then(apply);
+      });
+      
       </script>
   </body>
 </html>
