@@ -26,7 +26,7 @@ group "group" =  group:spacedgroupname @{ group } / group:word @{ group }
 user = "@" username:username { return {'user':username} }
 username "username" = username:name @{ username } { return username }
 WS = [ \t]*
-word = $[a-z]i+
+word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
 name = word:word " " name:name { return word + " " + name } / word
         </textarea>
         <div id="error" style="color:red;"></div>
