@@ -1,0 +1,30 @@
+<pidata>
+  <name>Assignments</name>
+  <description>A mini language for assignments of users and groups</description>
+  <grammar>
+    start = assignment
+assignmentgroup = "everyone" / groupmembers
+assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / groupmembers
+assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
+groupmembers = "members of " groups:groups { return {'membersOf':groups} }
+groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
+spacedgroupname = w1:word " " w2:word { return w1 + " " + w2 }
+group "group" =  group:spacedgroupname @{ group } {return group} / group:word @{ group } { return group }
+user = "@" username:username { return {'user':username} }
+username "username" = username:name @{ username } { return username }
+WS = [ \t]*
+word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
+name = word:word " " name:name { return word + " " + name } / word
+  </grammar>
+  <initialize>
+    let users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
+    let groups = ['Management', 'Administration', 'Human Resources'];
+    ({
+       'completers': {
+          'username' : users,
+          'group' : groups
+        }
+    })
+  </initialize>
+</pidata>

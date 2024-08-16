@@ -1,4 +1,9 @@
 <pidata>
+  <name>Assignments using fetch</name>
+  <description>
+    A mini language for assignments of users and cities.
+    The data for completion of users and cities is fetched from a file.
+  </description>
   <grammar>
     <![CDATA[
 start = assignment

@@ -8,27 +8,19 @@
     </style>
   </head>
   <body>
-    <label>Test input: </label><input id="input" type="text" style="width: 400px;"></input>
+    <div><input id="name" style="width: 400px;border: none;font-size:20px; font-weight: bold;" placeholder="Example name"></input></div>
+    <div>
+      <textarea id="description" style="height: 100px; width: 400px;border:none;" placeholder="Example description">
+      </textarea>
+    </div>
+    <div>
+      <label>Test input: </label><input id="input" type="text" style="width: 400px;"></input>
+    </div>
 
     <div class="grid-container">
       <div class="grid-item">
         <h4>Grammar</h4>
-        <textarea id="grammar" style="width: 500px; height:400px;">
-start = assignment
-assignmentgroup = "everyone" / groupmembers
-assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
-assignee = "everyone" / user / groupmembers
-assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
-groupmembers = "members of " groups:groups { return {'membersOf':groups} }
-groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
-spacedgroupname = w1:word " " w2:word { return w1 + " " + w2 }
-group "group" =  group:spacedgroupname @{ group } / group:word @{ group }
-user = "@" username:username { return {'user':username} }
-username "username" = username:name @{ username } { return username }
-WS = [ \t]*
-word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
-name = word:word " " name:name { return word + " " + name } / word
-        </textarea>
+        <textarea id="grammar" style="width: 500px; height:400px;"></textarea>
         <div id="error" style="color:red;"></div>
       </div>
       <div class="grid-item">
@@ -40,17 +32,12 @@ name = word:word " " name:name { return word + " " + name } / word
         <div>
           <h4>Initialize</h4>
           <textarea id="initialize" style="width: 500px; height: 200px;">
-            var users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
-            var groups = ['Management', 'Administration', 'Human Resources'];
-            ({
-              'completers': {
-                  'username' : users,
-                  'group' : groups
-              }
-            })
           </textarea>
         </div>
-        <div><button id="apply" class="btn">Apply</button></div>
+        <div>
+          <button id="apply" class="btn">Apply</button>
+          <button id="download" class="btn">Download</button>
+        </div>
       </div>
     </div>
     <script src="peggy-input.js"></script>
@@ -65,12 +52,14 @@ name = word:word " " name:name { return word + " " + name } / word
                   .then(str => new DOMParser().parseFromString(str, "text/xml"))
                   .then(xml => {
                       console.log('Loading', xml);
+                      $('#name').val(xml.querySelector('name').textContent);
+                      $('#description').val(xml.querySelector('description').textContent);
                       $('#grammar').val(xml.querySelector('grammar').textContent);
                       $('#initialize').val(xml.querySelector('initialize').textContent);
                   });
           }
       }
-      
+
       function apply () {
           $('#input').replaceWith('<input id="input" type="text" style="width: 400px;"></input>');
           try {
@@ -92,10 +81,10 @@ name = word:word " " name:name { return word + " " + name } / word
               $('#error').text(e.message);
           }
       }
-      
+
       $('#apply').click(apply);
 
       Promise.resolve(load()).then(apply);
-    </script>
+      </script>
   </body>
 </html>
