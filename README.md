@@ -92,8 +92,12 @@ The algorithm is based on the following: try to parse the input using the given 
 
 ### Development
 
+`npm install`
+
 Run `make`, `make clean`, `make rebuild`.
 
 ### Demo
+
+`npm install`
 
 Run `make start-demo`.
