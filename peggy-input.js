@@ -214,6 +214,7 @@ PeggyInput.prototype.keyDownHandler = function (ev) {
 };
 
 PeggyInput.prototype._grammarCompleter = function (completerName, value) {
+    console.debug('Completing', completerName, value, _.includes(this.completers[completerName], value));
     this.setPartialInput(value);
     return _.includes(this.completers[completerName], value);
 };
