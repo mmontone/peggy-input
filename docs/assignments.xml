@@ -1,8 +1,10 @@
 <pidata>
-  <name>Assignments</name>
-  <description>A mini language for assignments of users and groups</description>
-  <grammar>
-    start = assignment
+<name>Assignments</name>
+<description>
+A mini language for assignments of users and groups
+</description>
+<grammar>
+start = assignment
 assignmentgroup = "everyone" / groupmembers
 assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
 assignee = "everyone" / user / groupmembers
@@ -16,9 +18,9 @@ username "username" = username:name @{ username } { return username }
 WS = [ \t]*
 word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
 name = word:word " " name:name { return word + " " + name } / word
-  </grammar>
-  <initialize>
-    let users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
+</grammar>
+<initialize>
+let users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
     let groups = ['Management', 'Administration', 'Human Resources'];
     ({
        'completers': {
@@ -26,6 +28,8 @@ name = word:word " " name:name { return word + " " + name } / word
           'group' : groups
         }
     })
-  </initialize>
-  <examples></examples>
+</initialize>
+<examples>
+<example>everyone but @Mariano Montone</example><example>members of Management, @Asgeir Bjørlykke</example><example>members of Administration but members of Human Resources, @Martin Montone</example>
+</examples>
 </pidata>
