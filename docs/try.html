@@ -41,6 +41,12 @@
           <button id="download" class="btn">Download</button>
         </div>
       </div>
+      <div>
+        <h4>Examples</h4>
+        <ul id="examples">
+        </ul>
+        <button id="add_example" class="btn">Add example</button>
+      </div>
     </div>
     <script src="peggy-input.js"></script>
     <script type="text/javascript">
@@ -99,6 +105,15 @@ ${initialize}
           }
       }
 
+      function makePeggyInput (inputEl, opts) {
+          return Promise.resolve(eval($('#initialize').val()))
+                  .then(options =>
+                      {
+                          return PeggyInput(inputEl, _.merge(options, opts, {grammar: $('#grammar').val()}));
+                      }).
+              catch(console.error);
+      }
+
       function apply () {
           $('#input').replaceWith('<input id="input" type="text" style="width: 400px;"></input>');
           try {
@@ -121,9 +136,20 @@ ${initialize}
           }
       }
 
+      function addExample () {
+          let example = $('<li><input></input><textarea></textarea></li>');
+          let input = $(example).children('input')[0];
+          let resultArea = $(example).children('textarea')[0];
+          $('ul#examples').append(example);
+          makePeggyInput(input, {resultHandler: function (res) {
+              $(resultArea).html(JSON.stringify(res));
+          }});          
+      }
+
       $(function () {
           $('#apply').click(apply);
           $('#download').click(download);
+          $('#add_example').click(addExample);
           Promise.resolve(load()).then(apply);
       });
       
