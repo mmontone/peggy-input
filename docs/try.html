@@ -5,47 +5,54 @@
           display: grid;
           grid-template-columns: auto auto;
       }
+      #examples > li > * {
+          width: 100%;
+      }
     </style>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   </head>
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" referrerpolicy="no-referrer"></script>
-    <div><input id="name" style="width: 400px;border: none;font-size:20px; font-weight: bold;" placeholder="Example name"></input></div>
-    <div>
-      <textarea id="description" style="height: 100px; width: 400px;border:none;" placeholder="Example description">
-      </textarea>
-    </div>
-    <div>
-      <label>Test input: </label><input id="input" type="text" style="width: 400px;"></input>
-    </div>
+    <div class="w3-container">
+      <div class="w3-panel">
+        <input id="name" style="width: 400px;border: none;font-size:20px; font-weight: bold;" placeholder="Example name"></input>
+        <br>
+        <textarea id="description" style="height: 100px; width: 400px;border:none;" placeholder="Example description">
+        </textarea>
+      </div>
+      <div class="w3-panel">
+        <label>Test input: </label><input id="input" type="text" style="width: 400px;"></input>
+      </div>
 
-    <div class="grid-container">
-      <div class="grid-item">
-        <h4>Grammar</h4>
-        <textarea id="grammar" style="width: 500px; height:400px;"></textarea>
-        <div id="error" style="color:red;"></div>
-      </div>
-      <div class="grid-item">
-        <div>
-          <h4>Result</h4>
-          <textarea id="result" style="width: 500px; height: 200px;">
-          </textarea>
+      <div class="grid-container">
+        <div class="grid-item w3-panel">
+          <h4>Grammar</h4>
+          <textarea id="grammar" style="width: 500px; height:400px;"></textarea>
+          <div id="error" style="color:red;"></div>
         </div>
-        <div>
-          <h4>Initialize</h4>
-          <textarea id="initialize" style="width: 500px; height: 200px;">
-          </textarea>
+        <div class="grid-item">
+          <div class="w3-panel">
+            <h4>Result</h4>
+            <textarea id="result" style="width: 500px; height: 200px;">
+            </textarea>
+          </div>
+          <div class="w3-panel">
+            <h4>Initialize</h4>
+            <textarea id="initialize" style="width: 500px; height: 200px;">
+            </textarea>
+          </div>
+          <div>
+            <button id="apply" class="btn w3-button w3-gray">Apply</button>
+            <button id="download" class="btn w3-button w3-gray">Download</button>
+          </div>
         </div>
-        <div>
-          <button id="apply" class="btn">Apply</button>
-          <button id="download" class="btn">Download</button>
+        <div class="w3-panel">
+          <h4>Examples</h4>
+          <ul id="examples" class="w3-ul">
+          </ul>
+          <button id="add_example" class="btn w3-button w3-gray">Add example</button>
         </div>
-      </div>
-      <div>
-        <h4>Examples</h4>
-        <ul id="examples">
-        </ul>
-        <button id="add_example" class="btn">Add example</button>
       </div>
     </div>
     <script src="peggy-input.js"></script>
@@ -105,10 +112,10 @@ ${examples}
                   .then(str => new DOMParser().parseFromString(str, "text/xml"))
                   .then(xml => {
                       console.log('Loading', xml);
-                      $('#name').val(xml.querySelector('name').textContent);
-                      $('#description').val(xml.querySelector('description').textContent);
-                      $('#grammar').val(xml.querySelector('grammar').textContent);
-                      $('#initialize').val(xml.querySelector('initialize').textContent);
+                      $('#name').val(_.trim(xml.querySelector('name').textContent));
+                      $('#description').val(_.trim(xml.querySelector('description').textContent));
+                      $('#grammar').val(_.trim(xml.querySelector('grammar').textContent));
+                      $('#initialize').val(_.trim(xml.querySelector('initialize').textContent));
                       Array.from(xml.querySelector('examples').children).forEach(function (example) {
                           addExample(example.textContent);
                       });
@@ -155,7 +162,7 @@ ${examples}
           makePeggyInput(input, {resultHandler: function (res) {
               $(resultArea).html(JSON.stringify(res));
           }});
-          if (expression !== undefined) {
+          if (typeof expression == 'string') {
               $(input).val(expression);
           }
       }
