@@ -29114,7 +29114,7 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.input = inputEl;
     this.syntaxErrorMsg = $('<div class="syntax-error" style="color: red; font-size: 10px;"></div>');
     this.syntaxErrorMsg.insertAfter(inputEl);
-    this.completionsArea = $('<select size=10 style="width: 400px;position:fixed;display:none;">');
+    this.completionsArea = $('<select size=10 style="width: 400px;position:absolute;display:none;">');
     this.completionsArea.insertAfter(this.syntaxErrorMsg);
 
     this.input.on('focus', this.updateCompletions.bind(this));
