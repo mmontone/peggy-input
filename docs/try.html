@@ -58,9 +58,9 @@
           else{
               const elem = window.document.createElement('a');
               elem.href = window.URL.createObjectURL(blob);
-              elem.download = filename;        
+              elem.download = filename;
               document.body.appendChild(elem);
-              elem.click();        
+              elem.click();
               document.body.removeChild(elem);
           }
       }
@@ -70,7 +70,12 @@
           let description = $('#description').val();
           let grammar = $('#grammar').val();
           let initialize = $('#initialize').val();
-          
+          var examples = '';
+          $('#examples').children().each(function (i, example) {
+              let expr = $(example).children('input')[0];
+              examples += `<example>${$(expr).val()}</example>`;
+          });
+
           var xml =
               `<pidata>
 <name>${name}</name>
@@ -83,9 +88,12 @@ ${grammar}
 <initialize>
 ${initialize}
 </initialize>
+<examples>
+${examples}
+</examples>
 </pidata>`;
           console.log(xml);
-          save(name + '.xml', xml, 'text/xml');          
+          save(name + '.xml', xml, 'text/xml');
       }
 
       function load() {
@@ -101,16 +109,19 @@ ${initialize}
                       $('#description').val(xml.querySelector('description').textContent);
                       $('#grammar').val(xml.querySelector('grammar').textContent);
                       $('#initialize').val(xml.querySelector('initialize').textContent);
+                      Array.from(xml.querySelector('examples').children).forEach(function (example) {
+                          addExample(example.textContent);
+                      });
                   });
           }
       }
 
       function makePeggyInput (inputEl, opts) {
           return Promise.resolve(eval($('#initialize').val()))
-                  .then(options =>
-                      {
-                          return PeggyInput(inputEl, _.merge(options, opts, {grammar: $('#grammar').val()}));
-                      }).
+              .then(options =>
+                  {
+                      return PeggyInput(inputEl, _.merge(options, opts, {grammar: $('#grammar').val()}));
+                  }).
               catch(console.error);
       }
 
@@ -136,14 +147,17 @@ ${initialize}
           }
       }
 
-      function addExample () {
+      function addExample (expression) {
           let example = $('<li><input></input><textarea></textarea></li>');
           let input = $(example).children('input')[0];
           let resultArea = $(example).children('textarea')[0];
           $('ul#examples').append(example);
           makePeggyInput(input, {resultHandler: function (res) {
               $(resultArea).html(JSON.stringify(res));
-          }});          
+          }});
+          if (expression !== undefined) {
+              $(input).val(expression);
+          }
       }
 
       $(function () {
@@ -152,7 +166,7 @@ ${initialize}
           $('#add_example').click(addExample);
           Promise.resolve(load()).then(apply);
       });
-      
+
       </script>
   </body>
 </html>

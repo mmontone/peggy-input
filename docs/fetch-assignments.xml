@@ -1,11 +1,14 @@
 <pidata>
-  <name>Assignments using fetch</name>
-  <description>
+<name>Assignments using fetch</name>
+<description>
+
     A mini language for assignments of users and cities.
     The data for completion of users and cities is fetched from a file.
-  </description>
-  <grammar>
-    <![CDATA[
+  
+</description>
+<grammar>
+
+    
 start = assignment
 assignmentcity = "everyone" / citymembers
 assignment = g:assignmentcity " " "but " as:assignees { return [g, {'not': as}] } / assignees
@@ -19,10 +22,12 @@ username "username" = username:name @{ username } { return username }
 WS = [ \t]*
 word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
 name = word:word " " name:name { return word + " " + name } / word
-    ]]>
-  </grammar>
-  <initialize>
-    <![CDATA[
+    
+  
+</grammar>
+<initialize>
+
+    
        fetch('/users.json')
                    .then(res => res.json())
                    .then(data => {
@@ -33,6 +38,10 @@ name = word:word " " name:name { return word + " " + name } / word
                   }
                })
              });
-    ]]>
-  </initialize>
+    
+  
+</initialize>
+<examples>
+<example>everyone</example><example>everyone but citizens of Dijon</example>
+</examples>
 </pidata>

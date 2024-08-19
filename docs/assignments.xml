@@ -27,4 +27,5 @@ name = word:word " " name:name { return word + " " + name } / word
         }
     })
   </initialize>
+  <examples></examples>
 </pidata>
