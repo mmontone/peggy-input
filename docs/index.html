@@ -10,13 +10,13 @@
   <body>
     <ul>
       <li>
-        <a href="/try.html">Try new grammar</a>
+        <a href="try.html">Try new grammar</a>
       </li>
       <li>
-        <a href="/try.html?load=assignments.xml">Assignments example</a>
+        <a href="try.html?load=assignments.xml">Assignments example</a>
       </li>
       <li>
-        <a href="/try.html?load=fetch-assignments.xml">Example using fetch</a>
+        <a href="try.html?load=fetch-assignments.xml">Example using fetch</a>
       </li>
       <li>
         Load: <input id="load" type="file" accept="text/xml"></input>
@@ -26,7 +26,7 @@
       document.getElementById('load').addEventListener('change', function(e) {
           if (e.target.files[0]) {
               let filename = e.target.files[0].name;
-              window.location.href = '/try.html?load=' + filename;
+              window.location.href = 'try.html?load=' + filename;
           }
       });
     </script>
