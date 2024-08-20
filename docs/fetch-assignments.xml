@@ -20,7 +20,7 @@ word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
 name = word:word " " name:name { return word + " " + name } / word
 </grammar>
 <initialize>
-fetch('/users.json')
+fetch('users.json')
                    .then(res => res.json())
                    .then(data => {
             return ({
