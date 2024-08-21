@@ -28,7 +28,7 @@ let groups = ['Management', 'Administration', 'Human Resources'];
            'candidates' : users
        },
        'group' : {
-          'rule' : 'spacedgroupname / word',
+          'rule' : 'name',
           'candidates' : groups
        }
     }
@@ -37,7 +37,7 @@ let groups = ['Management', 'Administration', 'Human Resources'];
 
 That means two Peggy rules are added to the original grammar.
 A `username` rule, that is parsed using the `name` rule.
-And a `group` rule, that is parsed using `spacedgroupname / word`.
+And a `group` rule, that is also parsed using `name`.
 
 The `candidates` contain an array of completion candidates.
 When one of those rules match, they are completed using the specified candidates.
@@ -62,10 +62,9 @@ assignee = "everyone" / user / groupmembers
 assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
 groupmembers = "members of " groups:groups { return {'membersOf':groups} }
 groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
-spacedgroupname = w1:word " " w2:word { return w1 + " " + w2 }
 user = "@" username:username { return {'user':username} }
 WS = [ \t]*
-word = $[a-z]i+
+word = !"but" cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
 name = word:word " " name:name { return word + " " + name } / word
 ```
 
@@ -89,7 +88,7 @@ PeggyInput('#input',
                       'candidates' : users
                   },
                   'group' : {
-                      'rule' : 'spacedgroupname / word',
+                      'rule' : 'name',
                       'candidates' : groups
                   }
               }
