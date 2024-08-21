@@ -11,11 +11,10 @@ assignee = "everyone" / user / groupmembers
 assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
 groupmembers = "members of " groups:groups { return {'membersOf':groups} }
 groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
-spacedgroupname = w1:word " " w2:word { return w1 + " " + w2 }
 user = "@" username:username { return {'user':username} }
 WS = [ \t]*
-word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
-name = word:word " " name:name { return word + " " + name } / word
+word = !"but" cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
+name = word:word " " name:name { return word + " " + name } / w:word { return w }
 </grammar>
 <initialize>
 let users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
@@ -28,7 +27,7 @@ let groups = ['Management', 'Administration', 'Human Resources'];
            'candidates' : users
        },
        'group' : {
-          'rule' : 'spacedgroupname / word',
+          'rule' : 'name',
           'candidates' : groups
        }
     }
