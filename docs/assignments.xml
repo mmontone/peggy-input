@@ -12,22 +12,27 @@ assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assi
 groupmembers = "members of " groups:groups { return {'membersOf':groups} }
 groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
 spacedgroupname = w1:word " " w2:word { return w1 + " " + w2 }
-group "group" =  group:spacedgroupname @{ group } {return group} / group:word @{ group } { return group }
 user = "@" username:username { return {'user':username} }
-username "username" = username:name @{ username } { return username }
 WS = [ \t]*
 word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
 name = word:word " " name:name { return word + " " + name } / word
 </grammar>
 <initialize>
 let users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
-    let groups = ['Management', 'Administration', 'Human Resources'];
-    ({
-       'completers': {
-          'username' : users,
-          'group' : groups
-        }
-    })
+let groups = ['Management', 'Administration', 'Human Resources'];
+
+({
+    'completers': {
+       'username' : {
+           'rule' : 'name',
+           'candidates' : users
+       },
+       'group' : {
+          'rule' : 'spacedgroupname / word',
+          'candidates' : groups
+       }
+    }
+})
 </initialize>
 <examples>
 <example>everyone but @Mariano Montone</example><example>members of Management, @Asgeir Bjørlykke</example><example>members of Administration but members of Human Resources, @Martin Montone</example>

@@ -6,30 +6,34 @@ A mini language for assignments of users and cities.
 </description>
 <grammar>
 start = assignment
-assignmentcity = "everyone" / citymembers
+assignmentcity = "everyone" / citycitizens
 assignment = g:assignmentcity " " "but " as:assignees { return [g, {'not': as}] } / assignees
-assignee = "everyone" / user / citymembers
+assignee = "everyone" / user / citycitizens
 assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
-citymembers = "citizens of " cities:cities { return {'membersOf':cities} }
+citycitizens = "citizens of " cities:cities { return {'citizensOf':cities} }
 cities = g:city WS "," WS gs:cities { return [g].concat(gs) } / g:city { return [g] }
-city "city" = city:word @{ city } { return city }
 user = "@" username:username { return {'user':username} }
-username "username" = username:name @{ username } { return username }
 WS = [ \t]*
 word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
 name = word:word " " name:name { return word + " " + name } / word
 </grammar>
 <initialize>
 fetch('users.json')
-                   .then(res => res.json())
-                   .then(data => {
-            return ({
-              'completers': {
-                  'username' : _.sortBy(_.map(data.results, u => u.name.first + ' ' + u.name.last)),
-                  'city' : _.sortedUniq(_.map(data.results, u => u.location.city))
-                  }
-               })
-             });
+.then(res => res.json())
+.then(data => {
+   return ({
+            'completers': {
+               'username' : {
+                  'rule' : 'name',
+                  'candidates' : _.sortBy(_.map(data.results, u => u.name.first + ' ' + u.name.last))
+               },
+               'city' : {
+                  'rule' : 'word',
+                  'candidates' : _.sortedUniq(_.map(data.results, u => u.location.city))
+               }
+            }
+         });
+      });      
 </initialize>
 <examples>
 <example>everyone but @Adam Anderson</example><example>everyone but citizens of Dijon</example><example>citizens of Deurningen but @Abigail Abraham, @Petko Miljković</example>
