@@ -1,7 +1,6 @@
 const $ = require('jquery');
 const _ = require('lodash');
 const peggy = require('peggy');
-const completerblock = require('./completerblock');
 const loglevel = require('loglevel');
 
 // Extension for getting cursor position in input field
@@ -42,7 +41,7 @@ function PeggyInput(input, opts) {
     this.logger = loglevel.getLogger('peggy-input');
     this.partialInput = null;
     this.value = null;
-    this.init(input, opts);    
+    this.init(input, opts);
 }
 
 PeggyInput.prototype.complete = function (input) {
@@ -71,19 +70,11 @@ PeggyInput.prototype.complete = function (input) {
 
         this.logger.debug('Completions', completions);
 
-        // If completions match a completer, expand the completion list using the completer
-        /*if (completions.length == 1) {
-            let more = this.completers[completions[0]];
-            if (more) {
-                completions = more;
-            }
-            }*/
-
         var expandedCompletions = [];
         completions.forEach(function (completion) {
-            let expanded = this.completers[completion];
-            if (expanded) {
-                expandedCompletions = expandedCompletions.concat(expanded);
+            let completer = this.completers[completion];
+            if (completer) {
+                expandedCompletions = expandedCompletions.concat(completer.candidates);
             } else {
                 expandedCompletions = expandedCompletions.concat([completion]);
             }
@@ -216,21 +207,32 @@ PeggyInput.prototype.keyDownHandler = function (ev) {
 };
 
 PeggyInput.prototype._grammarCompleter = function (completerName, value) {
-    this.logger.debug('Completing', completerName, value, _.includes(this.completers[completerName], value));
+    this.logger.debug('Completing', completerName, value, _.includes(this.completers[completerName].candidates, value));
     this.setPartialInput(value);
-    return _.includes(this.completers[completerName], value);
+    return _.includes(this.completers[completerName].candidates, value);
 };
+
+PeggyInput.prototype.expandCompletionRule = function (completerName) {
+    return `${completerName} "${completerName}" = ${completerName}:(${this.completers[completerName].rule}) &{ return ${this.name}._grammarCompleter("${completerName}", ${completerName}) } { return ${completerName} }`;
+}
 
 PeggyInput.prototype.init = function (inputSel, opts) {
 
     let inputEl = $(inputSel);
-    let name = genName('peggyInput');
-    window[name] = this;
-    this.logger.debug(opts.grammar);
-    this.grammar = completerblock.parse(opts.grammar).replaceAll('peggyInput', name);
-    
+    this.name = genName('peggyInput');
+    window[this.name] = this;
+    this.logger.debug('Grammar', opts.grammar);
+    this.grammar = opts.grammar;
     this.completers = opts.completers;
     this.resultHandler = opts.resultHandler;
+
+    Object.keys(this.completers).forEach(function (completerName) {
+        this.grammar += "\n";
+        this.grammar += this.expandCompletionRule(completerName);
+    }.bind(this));
+
+    this.logger.debug('Expanded grammar', this.grammar);
+
     this.parser = peggy.generate(this.grammar);
 
     this.input = inputEl;

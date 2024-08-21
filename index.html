@@ -6,6 +6,8 @@
           grid-template-columns: auto auto;
       }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" referrerpolicy="no-referrer"></script>
   </head>
   <body>
     <input id="input" type="text" style="width: 400px;"></input>
@@ -35,9 +37,7 @@ assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assi
 groupmembers = "members of " groups:groups { return {'membersOf':groups} }
 groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
 spacedgroupname = w1:word " " w2:word { return w1 + " " + w2 }
-group "group" =  group:spacedgroupname @{ group } / group:word @{ group }
 user = "@" username:username { return {'user':username} }
-username "username" = username:name @{ username } { return username }
 WS = [ \t]*
 word = cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
 name = word:word " " name:name { return word + " " + name } / word
@@ -51,8 +51,14 @@ name = word:word " " name:name { return word + " " + name } / word
           {
               'grammar': grammar,
               'completers': {
-                  'username' : users,
-                  'group' : groups
+                  'username' : {
+                      'rule' : 'name',
+                      'candidates' : users
+                  },
+                  'group' : {
+                      'rule' : 'spacedgroupname / word',
+                      'candidates' : groups
+                  }
               },
               'resultHandler': function (result) {
                   $('#result').html(JSON.stringify(result));
