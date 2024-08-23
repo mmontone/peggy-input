@@ -44,7 +44,7 @@ PeggyInput.prototype.complete = function (input) {
         this.value = this.parser.parse(input, {
             peggyInput: this
         });
-        
+
         if (this.resultHandler) {
             this.resultHandler(this.value);
         }
@@ -143,9 +143,9 @@ PeggyInput.prototype.insertCompletion = function (completion) {
 };
 
 PeggyInput.prototype.selectCompletion = function (completionVal) {
-    
+
     let inputVal = this.input.val().substring(0, this.input.getCursorPosition());
-    
+
     this.logger.debug('Completion selected', completionVal);
 
     // Try to match the completion repeatedly
@@ -159,7 +159,7 @@ PeggyInput.prototype.selectCompletion = function (completionVal) {
             return;
         }
     }
-    
+
     if (completionVal !== null) {
         this.insertCompletion(completionVal);
         this.updateCompletions();
@@ -249,13 +249,18 @@ PeggyInput.prototype.init = function (inputSel, opts) {
         console.log('Select completion!', ev);
         this.selectCompletion(this.completionsArea.val());
     });
+    this.completionsArea.on('blur', () => {
+        this.completionsArea.hide();
+    });
 
     this.input.on('focus', this.updateCompletions.bind(this));
-    //this.input.on('blur', function () {
-    //    if ($(':focus') !== this.completionsArea) {
-    //        this.completionsArea.hide();
-    //    }
-    //}.bind(this));
+    this.input.on('blur', () => {
+        setTimeout(() => {
+            if (!$(document.activeElement).is(this.completionsArea)) {
+                this.completionsArea.hide();
+            }
+        }, 200);
+    });
     this.input.keyup(this.keyUpHandler.bind(this));
     this.input.keydown(this.keyDownHandler.bind(this));
 };
