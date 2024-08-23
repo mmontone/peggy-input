@@ -142,6 +142,30 @@ PeggyInput.prototype.insertCompletion = function (completion) {
     this.input.setCursorPosition(cursorPosition + completion.length);
 };
 
+PeggyInput.prototype.selectCompletion = function (completionVal) {
+    
+    let inputVal = this.input.val().substring(0, this.input.getCursorPosition());
+    
+    this.logger.debug('Completion selected', completionVal);
+
+    // Try to match the completion repeatedly
+    for (let i = Math.max(0, inputVal.length - completionVal.length); i < inputVal.length; i++) {
+        let prefix = inputVal.substr(i, inputVal.length);
+        if (_.startsWith(completionVal, prefix)) {
+            // Found a prefix
+            // Complete without the prefix
+            this.insertCompletion(completionVal.substr(prefix.length, completionVal.length));
+            this.updateCompletions();
+            return;
+        }
+    }
+    
+    if (completionVal !== null) {
+        this.insertCompletion(completionVal);
+        this.updateCompletions();
+    }
+};
+
 PeggyInput.prototype.keyUpHandler = function (ev) {
     //this.logger.debug(ev.key);
     switch(ev.key) {
@@ -154,25 +178,7 @@ PeggyInput.prototype.keyUpHandler = function (ev) {
         // what the user has already entered.
         // For example, if a 'everyone' completion was chosen,
         // and the user already entered 'every', then only append 'one' to the input value
-        let inputVal = this.input.val().substring(0, this.input.getCursorPosition());
-        let completionVal = this.completionsArea.val();
-
-        // Try to match the completion repeatedly
-        for (let i = Math.max(0, inputVal.length - completionVal.length); i < inputVal.length; i++) {
-            let prefix = inputVal.substr(i, inputVal.length);
-            if (_.startsWith(completionVal, prefix)) {
-                // Found a prefix
-                // Complete without the prefix
-                this.insertCompletion(completionVal.substr(prefix.length, completionVal.length));
-                this.updateCompletions();
-                return;
-            }
-        }
-
-        if (this.completionsArea.val() !== null) {
-            this.insertCompletion(this.completionsArea.val());
-            this.updateCompletions();
-        }
+        this.selectCompletion(this.completionsArea.val());
         break;
     default: this.updateCompletions();
     }
@@ -239,11 +245,17 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.syntaxErrorMsg.insertAfter(inputEl);
     this.completionsArea = $('<select size=10 style="width: 400px;position:absolute;display:none;">');
     this.completionsArea.insertAfter(this.syntaxErrorMsg);
+    this.completionsArea.change((ev) => {
+        console.log('Select completion!', ev);
+        this.selectCompletion(this.completionsArea.val());
+    });
 
     this.input.on('focus', this.updateCompletions.bind(this));
-    this.input.on('blur', function () {
-        this.completionsArea.hide();
-    }.bind(this));
+    //this.input.on('blur', function () {
+    //    if ($(':focus') !== this.completionsArea) {
+    //        this.completionsArea.hide();
+    //    }
+    //}.bind(this));
     this.input.keyup(this.keyUpHandler.bind(this));
     this.input.keydown(this.keyDownHandler.bind(this));
 };
