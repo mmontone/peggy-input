@@ -28356,6 +28356,7 @@ PeggyInput.prototype.complete = function (input) {
     }
     catch(syntaxError) {
         this.logger.debug({syntaxError});
+        this.partialInput = null;
         var completions = [];
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
         this.syntaxErrorMsg.html(syntaxError.message);
