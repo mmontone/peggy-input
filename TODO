@@ -7,3 +7,4 @@
 - A way of specifying server-side filtering of completion candidates.
 - Use a typechecking library for validating the api?
 - When handling lots of completion candidates, it could make sense to show the completion list only after a few characters have been typed, so a filtered list is ensured. This could be specified in global options, or in the completers options.
+- Use NPM instead or Make for building the library and running the demo?
