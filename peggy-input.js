@@ -1,4 +1,4 @@
-const $ = require('jquery');
+const $ = require('jquery-slim');
 const _ = require('lodash');
 const peggy = require('peggy');
 const loglevel = require('loglevel');
