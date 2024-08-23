@@ -47,14 +47,13 @@ function PeggyInput(input, opts) {
 PeggyInput.prototype.complete = function (input) {
     try {
         this.syntaxErrorMsg.html('');
-        this.value = this.parser.parse(input);
+        this.value = this.parser.parse(input, {peggyInput: this});
         if (this.resultHandler) {
             this.resultHandler(this.value);
         }
     }
     catch(syntaxError) {
         this.logger.debug({syntaxError});
-        this.partialInput = null;
         var completions = [];
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
         this.syntaxErrorMsg.html(syntaxError.message);
@@ -117,6 +116,7 @@ PeggyInput.prototype.fillCompletions = function (completions) {
 };
 
 PeggyInput.prototype.updateCompletions = function () {
+    this.logger.debug('Updating completions');
     this.completionsArea.html('');
     var inputText = this.input.val();
     var completions = this.complete(inputText).completions;
@@ -214,14 +214,12 @@ PeggyInput.prototype._grammarCompleter = function (completerName, value) {
 };
 
 PeggyInput.prototype.expandCompletionRule = function (completerName) {
-    return `${completerName} "${completerName}" = ${completerName}:(${this.completers[completerName].rule}) &{ return ${this.name}._grammarCompleter("${completerName}", ${completerName}) } { return ${completerName} }`;
+    return `${completerName} "${completerName}" = ${completerName}:(${this.completers[completerName].rule}) &{ return options.peggyInput._grammarCompleter("${completerName}", ${completerName}) } { return ${completerName} }`;
 }
 
 PeggyInput.prototype.init = function (inputSel, opts) {
 
     let inputEl = $(inputSel);
-    this.name = genName('peggyInput');
-    window[this.name] = this;
     this.logger.debug('Grammar', opts.grammar);
     this.grammar = opts.grammar;
     this.completers = opts.completers;

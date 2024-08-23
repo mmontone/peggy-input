@@ -5,7 +5,6 @@
 - Make completions list clickable.
 - Get current status of the completion input via Javascript. error, result, etc.
 - Better tuning of error status visually. Toggleable error message. Add CSS class to input field. Is there a way of marking an input element as invalid?
-- Dont assign PeggyInput instance globally. Access instance from grammar using Peggy extra options arguments.
 
 From Peggy docs:
 > parsers can also support their own custom options. For example:
