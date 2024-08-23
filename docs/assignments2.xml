@@ -35,6 +35,6 @@ let groups = ['Management', 'Administration', 'Human Resources'];
 })
 </initialize>
 <examples>
-<example>everyone but @Mariano Montone</example><example>members of Management, @Asgeir Bjørlykke</example><example>members of Administration but members of Human Resources, @Martin Montone</example>
+<example>everyone but @Mariano Montone</example><example>Management, @Asgeir Bjørlykke</example><example>Administration but Human Resources, @Martin Montone</example>
 </examples>
 </pidata>
