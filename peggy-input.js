@@ -42,15 +42,6 @@ PeggyInput.prototype.complete = function (input) {
     try {
         this.syntaxErrorMsg.html('');
         this.value = this.parser.parse(input, {
-            tracer: {
-                trace: (ev) => {
-                    //console.log('Event', ev);
-                    if (ev.type == "rule.match") {
-                        //this.logger.debug('Nullify partial input');
-                        //this.partialInput = null;
-                    }
-                }
-            },
             peggyInput: this
         });
         
@@ -241,7 +232,7 @@ PeggyInput.prototype.init = function (inputSel, opts) {
 
     this.logger.debug('Expanded grammar', this.grammar);
 
-    this.parser = peggy.generate(this.grammar, {trace: true});
+    this.parser = peggy.generate(this.grammar);
 
     this.input = inputEl;
     this.syntaxErrorMsg = $('<div class="syntax-error" style="color: red; font-size: 10px;"></div>');
