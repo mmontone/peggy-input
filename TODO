@@ -1,4 +1,4 @@
-- Improve completion of certain lists (for instance, completion of users and groups as user types. Hint: look at partialInput).
+- Improve completion of certain lists (for instance, completion of users and groups as user types. Hint: look at partialInput). Bug: partial input of completions that have a space character doesn't work well.
 - Consider dropping JQuery and use native JS ?
 - Completion data with ids? i.e. username + id
 - Check performance for lots of completion candidates. ~10K
