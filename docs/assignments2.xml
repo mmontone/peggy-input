@@ -1,0 +1,40 @@
+<pidata>
+<name>Assignments</name>
+<description>
+A mini language for assignments of users and groups
+</description>
+<grammar>
+start = assignment
+assignmentgroup = "everyone" / groupmembers
+not = "but"
+assignment = g:assignees WS not WS as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / groupmembers
+assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
+groupmembers = groups:groups { return {'membersOf':groups} }
+groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
+user = "@" username:username { return {'user':username} }
+WS = [ \t]*
+word = !not cs:(![ -,@] .)+ { return cs.map(c => c[1]).join('') }
+name = word:word " " name:name { return word + " " + name } / w:word { return w }
+</grammar>
+<initialize>
+let users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
+let groups = ['Management', 'Administration', 'Human Resources'];
+
+({
+    'completers': {
+       'username' : {
+           'rule' : 'name',
+           'candidates' : users
+       },
+       'group' : {
+          'rule' : 'name',
+          'candidates' : groups
+       }
+    }
+})
+</initialize>
+<examples>
+<example>everyone but @Mariano Montone</example><example>members of Management, @Asgeir Bjørlykke</example><example>members of Administration but members of Human Resources, @Martin Montone</example>
+</examples>
+</pidata>
