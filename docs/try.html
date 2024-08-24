@@ -140,11 +140,10 @@ ${examples}
                   .then(options =>
                       {
                           options.grammar = $('#grammar').val();
-                          window.peggyInput = PeggyInput('#input', options);
-                          window.peggyInput.resultHandler = function (result) {
+                          options.resultHandler = function (result) {
                               $('#result').html(JSON.stringify(result));
                           };
-                      })
+                          window.peggyInput = PeggyInput('#input', options);                           })
                   .catch(e => $('#error').text(e.message));
           }
           catch (e) {

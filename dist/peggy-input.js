@@ -25571,7 +25571,9 @@ PeggyInput.prototype.updateStatus = function () {
     catch (syntaxError) {
         this.logger.debug({syntaxError});
         this.syntaxErrorMsg.html(syntaxError.message);
-        this.resultHandler(syntaxError.message);
+        if (this.resultHandler) {
+            this.resultHandler(syntaxError.message);
+        }
     }
 };
 
