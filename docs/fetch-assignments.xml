@@ -29,7 +29,7 @@ fetch('users.json')
                },
                'city' : {
                   'rule' : 'name',
-                  'candidates' : _.sortedUniq(_.map(data.results, u => u.location.city))
+                  'candidates' : _.sortBy(_.uniq(_.map(data.results, u => u.location.city)))
                }
             }
          });
