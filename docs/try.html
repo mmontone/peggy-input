@@ -139,9 +139,7 @@ ${examples}
               Promise.resolve(eval($('#initialize').val()))
                   .then(options =>
                       {
-                          console.log('optoins', options);
                           options.grammar = $('#grammar').val();
-                          console.log('Initializing with:', options);
                           window.peggyInput = PeggyInput('#input', options);
                           window.peggyInput.resultHandler = function (result) {
                               $('#result').html(JSON.stringify(result));

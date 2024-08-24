@@ -36,7 +36,26 @@ function PeggyInput(input, opts) {
     this.partialInput = null;
     this.value = null;
     this.init(input, opts);
+    this.updateStatus();
 }
+
+PeggyInput.prototype.updateStatus = function () {
+    try {
+        this.syntaxErrorMsg.html('');
+        this.value = this.parser.parse(this.input.val(), {
+            peggyInput: this
+        });
+
+        if (this.resultHandler) {
+            this.resultHandler(this.value);
+        }
+    }
+    catch (syntaxError) {
+        this.logger.debug({syntaxError});
+        this.syntaxErrorMsg.html(syntaxError.message);
+        this.resultHandler(syntaxError.message);
+    }
+};
 
 PeggyInput.prototype.complete = function (input) {
     try {
@@ -54,6 +73,9 @@ PeggyInput.prototype.complete = function (input) {
         var completions = [];
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
         this.syntaxErrorMsg.html(syntaxError.message);
+        if (this.resultHandler) {
+            this.resultHandler(syntaxError.message);
+        }
         expected.forEach(function (expectation) {
             switch (expectation.type) {
             case 'literal':
