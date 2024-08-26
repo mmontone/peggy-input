@@ -35,9 +35,14 @@ function PeggyInput(input, opts) {
     this.logger = loglevel.getLogger('peggy-input');
     this.partialInput = null;
     this.value = null;
+    this.error = null;
     this.init(input, opts);
     this.updateStatus();
 }
+
+PeggyInput.prototype.isValid = function () {
+    return this.error == null;
+};
 
 PeggyInput.prototype.updateStatus = function () {
     try {
@@ -45,18 +50,25 @@ PeggyInput.prototype.updateStatus = function () {
         this.value = this.parser.parse(this.input.val(), {
             peggyInput: this
         });
-
-        if (this.resultHandler) {
-            this.resultHandler(this.value);
-        }
+        this.error = null;
     }
     catch (syntaxError) {
         this.logger.debug({syntaxError});
+        this.value = null;
+        this.error = syntaxError;
         this.syntaxErrorMsg.html(syntaxError.message);
-        if (this.resultHandler) {
-            this.resultHandler(syntaxError.message);
-        }
     }
+    if (this.changeHandler) {
+        this.changeHandler(this);
+    }
+};
+
+PeggyInput.prototype.getValue = function () {
+    return this.value;
+};
+
+PeggyInput.prototype.getError = function () {
+    return this.error;
 };
 
 PeggyInput.prototype.complete = function (input) {
@@ -65,19 +77,15 @@ PeggyInput.prototype.complete = function (input) {
         this.value = this.parser.parse(input, {
             peggyInput: this
         });
-
-        if (this.resultHandler) {
-            this.resultHandler(this.value);
-        }
+        this.error = null;
     }
     catch(syntaxError) {
         this.logger.debug({syntaxError});
+        this.value = null;
+        this.error = syntaxError;
         var completions = [];
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
         this.syntaxErrorMsg.html(syntaxError.message);
-        if (this.resultHandler) {
-            this.resultHandler(syntaxError.message);
-        }
         expected.forEach(function (expectation) {
             switch (expectation.type) {
                 case 'literal':
@@ -164,6 +172,7 @@ PeggyInput.prototype.insertCompletion = function (completion) {
     let cursorPosition = this.input.getCursorPosition();
     this.input.val(insertString(this.input.val(), completion, cursorPosition));
     this.input.setCursorPosition(cursorPosition + completion.length);
+    this.updateStatus();
 };
 
 PeggyInput.prototype.selectCompletion = function (completionVal) {
@@ -253,7 +262,8 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.logger.debug('Grammar', opts.grammar);
     this.grammar = opts.grammar;
     this.completers = opts.completers;
-    this.resultHandler = opts.resultHandler;
+    this.changeHandler = opts.onChange;
+    inputEl.change(this.updateStatus.bind(this));
 
     Object.keys(this.completers).forEach(function (completerName) {
         this.grammar += "\n";

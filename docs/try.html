@@ -34,7 +34,7 @@
         <div class="grid-item">
           <div class="w3-panel">
             <h4>Result</h4>
-            <textarea id="result" style="width: 500px; height: 200px;">
+            <textarea id="result" style="width: 500px; height: 200px;" readonly>
             </textarea>
           </div>
           <div class="w3-panel">
@@ -140,10 +140,16 @@ ${examples}
                   .then(options =>
                       {
                           options.grammar = $('#grammar').val();
-                          options.resultHandler = function (result) {
-                              $('#result').html(JSON.stringify(result));
+                          options.onChange = function (peggyInput) {
+                              console.log('input changed', peggyInput, peggyInput.isValid());
+                              if (peggyInput.isValid()) {
+                                  $('#result').val(JSON.stringify(peggyInput.getValue()));
+                              } else {
+                                  $('#result').val(peggyInput.getError().message);
+                              }
                           };
-                          window.peggyInput = PeggyInput('#input', options);                           })
+                          window.peggyInput = PeggyInput('#input', options);
+                      })
                   .catch(e => $('#error').text(e.message));
           }
           catch (e) {
@@ -152,13 +158,19 @@ ${examples}
       }
 
       function addExample (expression) {
-          let example = $('<li><input></input><textarea></textarea></li>');
+          let example = $('<li><input></input><textarea readonly></textarea></li>');
           let input = $(example).children('input')[0];
           let resultArea = $(example).children('textarea')[0];
           $('ul#examples').append(example);
-          makePeggyInput(input, {resultHandler: function (res) {
-              $(resultArea).html(JSON.stringify(res));
-          }});
+          makePeggyInput(input, {
+              onChange: function (peggyInput) {
+                  if (peggyInput.isValid()) {
+                      $(resultArea).val(JSON.stringify(peggyInput.getValue()));
+                  } else {
+                      $(resultArea).val(peggyInput.getError().message);
+                  }
+              }
+          });
           if (typeof expression == 'string') {
               $(input).val(expression);
           }
