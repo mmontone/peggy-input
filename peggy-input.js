@@ -80,12 +80,12 @@ PeggyInput.prototype.complete = function (input) {
         }
         expected.forEach(function (expectation) {
             switch (expectation.type) {
-            case 'literal':
-                completions.push(expectation.text);
-                break;
-            case 'other':
-                completions.push(expectation.description);
-                break;
+                case 'literal':
+                    completions.push(expectation.text);
+                    break;
+                case 'other':
+                    completions.push(expectation.description);
+                    break;
             }
         });
 
@@ -193,44 +193,44 @@ PeggyInput.prototype.selectCompletion = function (completionVal) {
 PeggyInput.prototype.keyUpHandler = function (ev) {
     //this.logger.debug(ev.key);
     switch(ev.key) {
-    case 'ArrowDown':
-        break;
-    case 'ArrowUp':
-        break;
-    case 'Enter':
-        // When selecting the completion we need to take into account
-        // what the user has already entered.
-        // For example, if a 'everyone' completion was chosen,
-        // and the user already entered 'every', then only append 'one' to the input value
-        this.selectCompletion(this.completionsArea.val());
-        break;
-    default: this.updateCompletions();
+        case 'ArrowDown':
+            break;
+        case 'ArrowUp':
+            break;
+        case 'Enter':
+            // When selecting the completion we need to take into account
+            // what the user has already entered.
+            // For example, if a 'everyone' completion was chosen,
+            // and the user already entered 'every', then only append 'one' to the input value
+            this.selectCompletion(this.completionsArea.val());
+            break;
+        default: this.updateCompletions();
     }
 };
 
 PeggyInput.prototype.keyDownHandler = function (ev) {
     let selected = this.completionsArea.children('option:selected');
     switch(ev.key) {
-    case 'ArrowDown':
-        if (selected.length == 0) {
-            this.completionsArea.children('option').first().attr('selected', 'selected');
-        } else {
-            selected.attr('selected', false);
-            selected.next().attr('selected','selected');
-        }
-        // Prevent cursor from moving to the end
-        ev.preventDefault();
-        break;
-    case 'ArrowUp':
-        if (selected.length == 0) {
-            this.completionsArea.children('option').first().attr('selected', 'selected');
-        } else {
-            selected.attr('selected', false);
-            selected.prev().attr('selected','selected');
-        }
-        // Prevent cursor from moving to the beginning
-        ev.preventDefault();
-        break;
+        case 'ArrowDown':
+            if (selected.length == 0) {
+                this.completionsArea.children('option').first().attr('selected', 'selected');
+            } else {
+                selected.attr('selected', false);
+                selected.next().attr('selected','selected');
+            }
+            // Prevent cursor from moving to the end
+            ev.preventDefault();
+            break;
+        case 'ArrowUp':
+            if (selected.length == 0) {
+                this.completionsArea.children('option').first().attr('selected', 'selected');
+            } else {
+                selected.attr('selected', false);
+                selected.prev().attr('selected','selected');
+            }
+            // Prevent cursor from moving to the beginning
+            ev.preventDefault();
+            break;
     }
 };
 
