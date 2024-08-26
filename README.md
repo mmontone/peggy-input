@@ -42,6 +42,17 @@ And a `group` rule, that is also parsed using `name`.
 The `candidates` contain an array of completion candidates.
 When one of those rules match, they are completed using the specified candidates.
 
+### Options
+- `grammar`: String. Required. The Peggy grammar.
+- `completers`: Object. Required. Object with keys being the completer name, and value an object with `rule` and `candidates`. `rule` is the name of the Peggy rule to create. `candidates` is an array of strings with the completion candidates.
+- `showSyntaxErrorMsg`: Boolean. Optional. Default is `true`. When enabled show the syntax errors below the HTML input.
+- `onChange`: Function. Optional. A function handler that is invoked with the PeggyInput instance as argument when there's a change.
+
+### API
+- `isValid`: Returns `true` iff the current input value is a valid expression according to the provided grammar.
+- `getValue`: Returns the parsed value of the input, unless it is in an error state.
+- `getError`: Returns the current syntax error.
+
 ### Examples
 
 #### Assignments language
