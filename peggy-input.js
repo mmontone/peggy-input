@@ -300,14 +300,14 @@ PeggyInput.prototype.expandCompletionRule = function (completerName) {
 
 PeggyInput.prototype.init = function (inputSel, opts) {
 
+    let inputEl = $(inputSel);
     let defaultOptions = {
         showSyntaxErrorMsg: true,
-        validateWhenBlank: false
+        validateWhenBlank: inputEl.get(0).required
     };
 
     opts = _.defaults(opts, defaultOptions);
-
-    let inputEl = $(inputSel);
+    
     this.logger.debug('Grammar', opts.grammar);
     this.grammar = opts.grammar;
     this.completers = opts.completers;
