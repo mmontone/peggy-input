@@ -25569,12 +25569,14 @@ PeggyInput.prototype.updateStatus = function () {
             peggyInput: this
         });
         this.error = null;
+        this.input.removeClass('error');
     }
     catch (syntaxError) {
         this.logger.debug({syntaxError});
         this.value = null;
         this.error = syntaxError;
         this.syntaxErrorMsg.html(syntaxError.message);
+        this.input.addClass('error');
     }
     if (this.changeHandler) {
         this.changeHandler(this);
@@ -25823,6 +25825,9 @@ PeggyInput.prototype.init = function (inputSel, opts) {
 
     this.input.on('focus', this.updateCompletions.bind(this));
     this.input.on('blur', () => {
+        // Don't close the completions area immediatly. We need
+        // to give it some time in order to be able to process a possible click event
+        // on one of the completion candidates.
         setTimeout(() => {
             if (!$(document.activeElement).is(this.completionsArea)) {
                 this.completionsArea.hide();

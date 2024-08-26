@@ -51,12 +51,14 @@ PeggyInput.prototype.updateStatus = function () {
             peggyInput: this
         });
         this.error = null;
+        this.input.removeClass('error');
     }
     catch (syntaxError) {
         this.logger.debug({syntaxError});
         this.value = null;
         this.error = syntaxError;
         this.syntaxErrorMsg.html(syntaxError.message);
+        this.input.addClass('error');
     }
     if (this.changeHandler) {
         this.changeHandler(this);
