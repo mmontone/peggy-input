@@ -14,8 +14,7 @@ groupmembers = groups:groups { return {'membersOf':groups} }
 groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
 user = "@" username:username { return {'user':username} }
 WS = [ \t]*
-word = !not cs:(![ -,@] .)+ { return cs.map(c => c[1]).join('') }
-name = word:word " " name:name { return word + " " + name } / w:word { return w }
+name = !not cs:(![-,@] .)+ { return cs.map(c => c[1]).join('') }
 </grammar>
 <initialize>
 let users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];

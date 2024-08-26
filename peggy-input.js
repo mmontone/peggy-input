@@ -287,13 +287,13 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.parser = peggy.generate(this.grammar);
 
     this.input = inputEl;
-    this.input.css('display', 'block');
     this.syntaxErrorMsg = $('<div class="syntax-error" style="color: red; font-size: 10px;"></div>');
     if (!opts.showSyntaxErrorMsg) {
         this.syntaxErrorMsg.hide();
     }
     this.syntaxErrorMsg.insertAfter(inputEl);
-    this.completionsArea = $('<select size=10 style="width: 400px;position:absolute;display:none;">');
+    this.completionsArea = $('<select size=10 style="width: 400px;position:absolute;display:block;">');
+    this.completionsArea.hide();
     this.completionsArea.insertAfter(this.syntaxErrorMsg);
     this.completionsArea.change((ev) => {
         console.log('Select completion!', ev);
