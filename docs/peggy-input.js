@@ -25562,6 +25562,14 @@ PeggyInput.prototype.isValid = function () {
     return this.error == null;
 };
 
+PeggyInput.prototype.formatErrorMsg = function () {
+    if (this.errorMsgFormatter) {
+        return this.errorMsgFormatter(this, this.getError());
+    } else {
+        return this.getError().message;
+    }
+};
+
 PeggyInput.prototype.updateStatus = function () {
     try {
         this.syntaxErrorMsg.html('');
@@ -25570,13 +25578,20 @@ PeggyInput.prototype.updateStatus = function () {
         });
         this.error = null;
         this.input.removeClass('error');
+        if (this.input.get(0).willValidate) {
+            this.input.get(0).setCustomValidity('');
+        }
     }
     catch (syntaxError) {
         this.logger.debug({syntaxError});
         this.value = null;
         this.error = syntaxError;
-        this.syntaxErrorMsg.html(syntaxError.message);
+        let errorMsg = this.formatErrorMsg();
+        this.syntaxErrorMsg.html(errorMsg);
         this.input.addClass('error');
+        if (this.input.get(0).willValidate) {
+            this.input.get(0).setCustomValidity(errorMsg);
+        }
     }
     if (this.changeHandler) {
         this.changeHandler(this);
@@ -25611,7 +25626,7 @@ PeggyInput.prototype.complete = function (input) {
         this.error = syntaxError;
         var completions = [];
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
-        this.syntaxErrorMsg.html(syntaxError.message);
+        this.syntaxErrorMsg.html(this.formatErrorMsg());
         expected.forEach(function (expectation) {
             switch (expectation.type) {
                 case 'literal':
@@ -25795,6 +25810,8 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.grammar = opts.grammar;
     this.completers = opts.completers;
     this.changeHandler = opts.onChange;
+    this.errorMsgFormatter = opts.errorMsgFormatter;
+
     inputEl.change(this.updateStatus.bind(this));
 
     Object.keys(this.completers).forEach(function (completerName) {
