@@ -60,8 +60,12 @@ name = word:word " " name:name { return word + " " + name } / word
                       'candidates' : groups
                   }
               },
-              'resultHandler': function (result) {
-                  $('#result').html(JSON.stringify(result));
+              'onChange': function (peggyInput) {
+                  if (peggyInput.isValid()) {
+                      $('#result').val(JSON.stringify(peggyInput.getValue()));
+                  } else {
+                      $('#result').val(peggyInput.getError().message);
+                  }
               }
           }
       );
