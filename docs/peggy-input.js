@@ -25571,6 +25571,15 @@ PeggyInput.prototype.formatErrorMsg = function () {
 };
 
 PeggyInput.prototype.updateStatus = function () {
+
+    if (!this.input.val() && !this.validateWhenBlank) {
+        this.value = null;
+        this.error = null;
+        this.syntaxErrorMsg.html('');
+        this.completionsArea.hide();
+        return;
+    }
+
     try {
         this.syntaxErrorMsg.html('');
         this.value = this.parser.parse(this.input.val(), {
@@ -25593,6 +25602,7 @@ PeggyInput.prototype.updateStatus = function () {
             this.input.get(0).setCustomValidity(errorMsg);
         }
     }
+
     if (this.changeHandler) {
         this.changeHandler(this);
     }
@@ -25617,6 +25627,7 @@ PeggyInput.prototype.getInput = function () {
 };
 
 PeggyInput.prototype.complete = function (input) {
+
     try {
         this.syntaxErrorMsg.html('');
         this.value = this.parser.parse(input, {
@@ -25630,7 +25641,11 @@ PeggyInput.prototype.complete = function (input) {
         this.error = syntaxError;
         var completions = [];
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
-        this.syntaxErrorMsg.html(this.formatErrorMsg());
+
+        if (this.input.val() || this.validateWhenBlank) {
+            this.syntaxErrorMsg.html(this.formatErrorMsg());
+        }
+        
         expected.forEach(function (expectation) {
             switch (expectation.type) {
                 case 'literal':
@@ -25804,7 +25819,8 @@ PeggyInput.prototype.expandCompletionRule = function (completerName) {
 PeggyInput.prototype.init = function (inputSel, opts) {
 
     let defaultOptions = {
-        showSyntaxErrorMsg: true
+        showSyntaxErrorMsg: true,
+        validateWhenBlank: false
     };
 
     opts = _.defaults(opts, defaultOptions);
@@ -25815,6 +25831,7 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.completers = opts.completers;
     this.changeHandler = opts.onChange;
     this.errorMsgFormatter = opts.errorMsgFormatter;
+    this.validateWhenBlank = opts.validateWhenBlank;
 
     inputEl.change(this.updateStatus.bind(this));
 
