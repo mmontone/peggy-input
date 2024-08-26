@@ -58,9 +58,9 @@ When one of those rules match, they are completed using the specified candidates
 - `getError`: Returns the current syntax error.
 - `getInput`: Access the HTML input element.
 
-### Examples
+## Examples
 
-#### Assignments language
+### Assignments language
 
 Edit a mini-language for assignments. There are users and groups of users.
 The language has expressions like:
@@ -112,21 +112,21 @@ PeggyInput('#input',
       );
 ```
 
-### How it works
+## How it works
 
 The algorithm is based on the following: try to parse the input using the given PEG grammar. When an error ocurrs, that error contains the expected input at point. The expected input is used to provide the completions.
 
-### Development
+## Development
 
 `npm install`
 
 Run `make`, `make clean`, `make rebuild`.
 
-#### Debug logs
+### Debug logs
 
 `peggyInputInstance.logger.setLevel('debug');`
 
-### Demo
+## Demo
 
 `npm install`
 
