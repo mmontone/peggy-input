@@ -49,6 +49,7 @@ When one of those rules match, they are completed using the specified candidates
 - `showSyntaxErrorMsg`: Boolean. Optional. Default is `true`. When enabled show the syntax errors below the HTML input.
 - `onChange`: Function. Optional. A function handler that is invoked with the PeggyInput instance as argument when there's a change.
 - `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return a string used a error message.
+- `validateWhenBlank`: Boolean. Optional. Default is false. Whether to validate the input and show an error when the input is blank.
 
 ### API
 
