@@ -25589,13 +25589,19 @@ PeggyInput.prototype.getError = function () {
     return this.error;
 };
 
+/* Remove PeggyInput widgets */
+PeggyInput.prototype.remove = function () {
+    this.syntaxErrorMsg.remove();
+    this.completionsArea.remove();
+};
+
 PeggyInput.prototype.complete = function (input) {
     try {
         this.syntaxErrorMsg.html('');
         this.value = this.parser.parse(input, {
             peggyInput: this
         });
-        this.error = null;        
+        this.error = null;
     }
     catch(syntaxError) {
         this.logger.debug({syntaxError});
@@ -25776,13 +25782,19 @@ PeggyInput.prototype.expandCompletionRule = function (completerName) {
 
 PeggyInput.prototype.init = function (inputSel, opts) {
 
+    let defaultOptions = {
+        showSyntaxErrorMsg: true
+    };
+
+    opts = _.defaults(opts, defaultOptions);
+
     let inputEl = $(inputSel);
     this.logger.debug('Grammar', opts.grammar);
     this.grammar = opts.grammar;
     this.completers = opts.completers;
     this.changeHandler = opts.onChange;
     inputEl.change(this.updateStatus.bind(this));
-    
+
     Object.keys(this.completers).forEach(function (completerName) {
         this.grammar += "\n";
         this.grammar += this.expandCompletionRule(completerName);
@@ -25793,7 +25805,11 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.parser = peggy.generate(this.grammar);
 
     this.input = inputEl;
+    this.input.css('display', 'block');
     this.syntaxErrorMsg = $('<div class="syntax-error" style="color: red; font-size: 10px;"></div>');
+    if (!opts.showSyntaxErrorMsg) {
+        this.syntaxErrorMsg.hide();
+    }
     this.syntaxErrorMsg.insertAfter(inputEl);
     this.completionsArea = $('<select size=10 style="width: 400px;position:absolute;display:none;">');
     this.completionsArea.insertAfter(this.syntaxErrorMsg);
