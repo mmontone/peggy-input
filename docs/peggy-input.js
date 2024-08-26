@@ -25612,6 +25612,10 @@ PeggyInput.prototype.remove = function () {
     this.completionsArea.remove();
 };
 
+PeggyInput.prototype.getInput = function () {
+    return this.input.get(0);
+};
+
 PeggyInput.prototype.complete = function (input) {
     try {
         this.syntaxErrorMsg.html('');
