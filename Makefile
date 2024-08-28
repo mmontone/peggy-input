@@ -10,5 +10,7 @@ clean:
 	rm -f dist/peggy-input.min.js
 	rm -f docs/peggy-input.js
 rebuild: clean all
+docs/users.json:
+	wget -O docs/users.json 'https://randomuser.me/api/?inc=name,location&results=500'
 start-demo:
 	npx http-server docs
