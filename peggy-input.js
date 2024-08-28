@@ -98,10 +98,12 @@ PeggyInput.prototype.getError = function () {
     return this.error;
 };
 
-/* Remove PeggyInput widgets */
-PeggyInput.prototype.remove = function () {
+/* Destroy the PeggyInput instance */
+PeggyInput.prototype.destroy = function () {
     this.syntaxErrorMsg.remove();
     this.completionsArea.remove();
+    this.syntaxErrorMsg = null;
+    this.completionsArea = null;
 };
 
 PeggyInput.prototype.getInput = function () {

@@ -12,5 +12,7 @@ clean:
 rebuild: clean all
 docs/users.json:
 	wget -O docs/users.json 'https://randomuser.me/api/?inc=name,location&results=500'
+docs/users-long.json:
+	wget -O docs/users-long.json 'https://randomuser.me/api/?inc=name,location&results=5000'
 start-demo:
 	npx http-server docs
