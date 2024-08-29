@@ -145,7 +145,6 @@ ${examples}
                       {
                           options.grammar = $('#grammar').val();
                           options.onChange = function (peggyInput) {
-                              console.log('input changed', peggyInput, peggyInput.isValid());
                               if (peggyInput.isValid()) {
                                   $('#result').val(JSON.stringify(peggyInput.getValue()));
                               } else {
