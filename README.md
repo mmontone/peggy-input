@@ -40,12 +40,13 @@ A `username` rule, that is parsed using the `name` rule.
 And a `group` rule, that is also parsed using `name`.
 
 The `candidates` contain an array of completion candidates.
+A completion candidate should either a string, or an object with `label` and `value` members.
 When one of those rules match, they are completed using the specified candidates.
 
 ### Options
 
 - `grammar`: String. Required. The Peggy grammar.
-- `completers`: Object. Required. Object with keys being the completer name, and value an object with `rule` and `candidates`. `rule` is the name of the Peggy rule to create. `candidates` is an array of strings with the completion candidates.
+- `completers`: Object. Required. Object with keys being the completer name, and value an object with `rule` and `candidates`. `rule` is the name of the Peggy rule to create.
 - `showSyntaxErrorMsg`: Boolean. Optional. Default is `true`. When enabled show the syntax errors below the HTML input.
 - `onChange`: Function. Optional. A function handler that is invoked with the PeggyInput instance as argument when there's a change.
 - `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return a string used a error message.
@@ -54,10 +55,8 @@ When one of those rules match, they are completed using the specified candidates
 ### Completion candidates sources
 
 - An array of strings.
-- A string with an url from where to `fetch` the candidates. This behaviour is also controlled by other options:
-    * `preload`: Boolean. Default is false. If true, then candidates are fetched immediatly after the PeggyInput instance is initialized.
-    * `filter` : Boolean. Default is true. If false, then the filtering of candidates is assumed to be done server side.
-    * `cache`: Boolean. Default is false. If true, then fetch requests are cached.
+- An array of objects with `label` and `value` members.
+- A string with an url from where to `fetch` the candidates.
 - A function. Takes current entered prefix string and a PeggyInstance, and should return a Promise with a list of strings filtered by the prefix.
 
 ### API
