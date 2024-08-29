@@ -322,7 +322,15 @@ PeggyInput.prototype.getCandidateValue = function (completerName, label) {
 };
 
 PeggyInput.prototype.expandCompletionRule = function (completerName) {
-    return `${completerName} "${completerName}" = ${completerName}:(${this.completers[completerName].rule}) &{ return options.peggyInput.testGrammarCompleterMatches("${completerName}", ${completerName}) } { return options.peggyInput.getCandidateValue("${completerName}", ${completerName}) }`;
+    let completionMatchingPredicate = '';
+    let completer = this.completers[completerName];
+    let matchCompletion = _.defaultTo(completer.matchCompletion ,true);
+
+    if (matchCompletion) {
+        completionMatchingPredicate = `&{ return options.peggyInput.testGrammarCompleterMatches("${completerName}", ${completerName}) }`;
+    }
+
+    return `${completerName} "${completerName}" = ${completerName}:(${this.completers[completerName].rule})` + completionMatchingPredicate + `{ return options.peggyInput.getCandidateValue("${completerName}", ${completerName}) || ${completerName} }`;
 }
 
 /* Normalize an array of completion candidates to an array of objects with label and value members */
