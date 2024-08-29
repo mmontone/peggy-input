@@ -1,0 +1,43 @@
+<pidata>
+<name>Fetch candidates using functions</name>
+<description>
+A mini language for assignments of users and cities.
+    The data for completion of users and cities is fetched from a file using functions.
+</description>
+<grammar>
+start = assignment
+assignmentcity = "everyone" / citycitizens
+assignment = g:assignmentcity " " "but " as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / citycitizens
+assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
+citycitizens = "citizens of " cities:cities { return {'citizensOf':cities} }
+cities = g:city WS "," WS gs:cities { return [g].concat(gs) } / g:city { return [g] }
+user = "@" username:username { return {'user':username} }
+WS = [ \t]*
+word = !"but" cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
+name = word:word " " name:name { return word + " " + name } / word
+</grammar>
+<initialize>
+({
+   'completers': {
+        'username' : {
+           'rule' : 'name',
+           'candidates' : function () {
+                             return fetch('users.json').then(res => res.json()).then(data => _.sortBy(_.map(data.results, u => u.name.first + ' ' + u.name.last)));
+                          },
+           'preload':true
+        },
+        'city' : {
+           'rule' : 'name',
+           'candidates' : function () {
+                              return fetch('users.json').then(res => res.json()).then(data => _.sortBy(_.uniq(_.map(data.results, u => u.location.city))));
+                          },
+           'preload':true    
+        }
+    }
+})
+</initialize>
+<examples>
+<example>everyone but @Adam Anderson</example><example>everyone but citizens of Dijon</example><example>citizens of Deurningen but @Abigail Abraham, @Petko Miljković</example>
+</examples>
+</pidata>

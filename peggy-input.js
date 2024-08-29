@@ -37,8 +37,8 @@ function PeggyInput(input, opts) {
     this.value = null;
     this.error = null;
     this.candidatesIndex = {};
-    this.init(input, opts);
-    this.updateStatus();
+    this.init(input, opts).then(this.updateStatus.bind(this));
+    return this;
 }
 
 PeggyInput.prototype.isValid = function () {
@@ -351,6 +351,7 @@ PeggyInput.prototype.normalizeCandidates = function (candidates) {
 PeggyInput.prototype.init = function (inputSel, opts) {
 
     let inputEl = $(inputSel);
+    this.input = inputEl;
     let defaultOptions = {
         showSyntaxErrorMsg: true,
         validateWhenBlank: inputEl.get(0).required
@@ -372,24 +373,45 @@ PeggyInput.prototype.init = function (inputSel, opts) {
         this.grammar += this.expandCompletionRule(completerName);
     }.bind(this));
 
-    /* Normalize completion candidates */
-    Object.keys(this.completers).forEach(function (completerName) {
-        let completer = this.completers[completerName];
-        completer.candidates = this.normalizeCandidates(completer.candidates);
-        /* Build a reverse index for candidates, from label to value */
-        this.buildCandidatesIndex(completerName, completer);
-    }.bind(this));
+    /* Fetch candidates if needed */
+    let completers = _.values(this.completers);
+    return Promise.all(_.map(completers, function (completer) {
+        if (_.isFunction(completer.candidates)) {
+            return completer.candidates();
+        } else {
+            return completer.candidates;
+        }
+    })).then(fetchedCandidates => {
+
+        console.log('Fetched candidates', fetchedCandidates);
+
+        /* Assign the fetched candidates */
+        _.forEach(_.zip(completers, fetchedCandidates),
+                  ([completer, candidates]) => {
+                      completer.candidates = candidates;
+                  });
+
+        /* Normalize completion candidates */
+        Object.keys(this.completers).forEach(function (completerName) {
+            let completer = this.completers[completerName];
+            completer.candidates = this.normalizeCandidates(completer.candidates);
+            /* Build a reverse index for candidates, from label to value */
+            this.buildCandidatesIndex(completerName, completer);
+        }.bind(this))
+    }).then(() => this.initUI(opts));
+};
+
+PeggyInput.prototype.initUI = function (opts) {
 
     this.logger.debug('Expanded grammar', this.grammar);
 
     this.parser = peggy.generate(this.grammar);
 
-    this.input = inputEl;
     this.syntaxErrorMsg = $('<div class="syntax-error" style="color: red; font-size: 10px;"></div>');
     if (!opts.showSyntaxErrorMsg) {
         this.syntaxErrorMsg.hide();
     }
-    this.syntaxErrorMsg.insertAfter(inputEl);
+    this.syntaxErrorMsg.insertAfter(this.input);
     this.completionsArea = $('<select size=10 style="width: 400px;position:absolute;display:block;">');
     this.completionsArea.hide();
     this.completionsArea.insertAfter(this.syntaxErrorMsg);
