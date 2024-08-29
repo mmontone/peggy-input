@@ -25865,6 +25865,19 @@ PeggyInput.prototype.normalizeCandidates = function (candidates) {
     return candidates;
 };
 
+PeggyInput.prototype.resolveCandidates = function (candidates) {
+    if (_.isFunction(candidates)) {
+        return candidates();
+    } else if (_.isString(candidates)) {
+        return fetch(candidates)
+            .then(res => res.json());
+    } else if (_.isArray(candidates)) {
+        return Promise.resolve(candidates);
+    } else {
+        throw new Error('Invalid candidates:', candidates);
+    }
+};
+
 /* Initialization function */
 PeggyInput.prototype.init = function (inputSel, opts) {
 
@@ -25894,15 +25907,11 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     /* Fetch candidates if needed */
     let completers = _.values(this.completers);
     return Promise.all(_.map(completers, function (completer) {
-        if (_.isFunction(completer.candidates)) {
-            return completer.candidates();
-        } else {
-            return completer.candidates;
-        }
-    })).then(fetchedCandidates => {
+        return this.resolveCandidates(completer.candidates);
+    }.bind(this))).then(fetchedCandidates => {
 
         console.log('Fetched candidates', fetchedCandidates);
-        
+
         /* Assign the fetched candidates */
         _.forEach(_.zip(completers, fetchedCandidates),
                   ([completer, candidates]) => {
