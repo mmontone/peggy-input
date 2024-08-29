@@ -25918,7 +25918,7 @@ PeggyInput.prototype.init = function (inputSel, opts) {
         return this.resolveCandidates(completer.candidates);
     }.bind(this))).then(fetchedCandidates => {
 
-        console.log('Fetched candidates', fetchedCandidates);
+        this.logger.debug('Fetched candidates', fetchedCandidates);
 
         /* Assign the fetched candidates */
         _.forEach(_.zip(completers, fetchedCandidates),
