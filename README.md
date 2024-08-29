@@ -51,6 +51,15 @@ When one of those rules match, they are completed using the specified candidates
 - `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return a string used a error message.
 - `validateWhenBlank`: Boolean. Optional. Default is true iff the input is required. Whether to validate the input and show an error when the input is blank.
 
+### Completion candidates sources
+
+- An array of strings.
+- A string with an url from where to `fetch` the candidates. This behaviour is also controlled by other options:
+    * `preload`: Boolean. Default is false. If true, then candidates are fetched immediatly after the PeggyInput instance is initialized.
+    * `filter` : Boolean. Default is true. If false, then the filtering of candidates is assumed to be done server side.
+    * `cache`: Boolean. Default is false. If true, then fetch requests are cached.
+- A function. Takes current entered prefix string and a PeggyInstance, and should return a Promise with a list of strings filtered by the prefix.
+
 ### API
 
 - `isValid`: Returns `true` iff the current input value is a valid expression according to the provided grammar.
