@@ -25554,6 +25554,7 @@ function PeggyInput(input, opts) {
     this.partialInput = null;
     this.value = null;
     this.error = null;
+    this.candidatesIndex = {};
     this.init(input, opts);
     this.updateStatus();
 }
@@ -25665,7 +25666,7 @@ PeggyInput.prototype.complete = function (input) {
         completions.forEach(function (completion) {
             let completer = this.completers[completion];
             if (completer) {
-                expandedCompletions = expandedCompletions.concat(completer.candidates);
+                expandedCompletions = expandedCompletions.concat(this.getCandidatesLabels(completer.candidates));
             } else {
                 expandedCompletions = expandedCompletions.concat([completion]);
             }
@@ -25805,19 +25806,66 @@ PeggyInput.prototype.keyDownHandler = function (ev) {
     }
 };
 
-PeggyInput.prototype._grammarCompleter = function (completerName, value) {
-    this.logger.debug('Completing', completerName, value, _.includes(this.completers[completerName].candidates, value));
-    let match = _.includes(this.completers[completerName].candidates, value);
+PeggyInput.prototype.getCandidatesLabels = function (candidates) {
+    return _.map(candidates, 'label');
+};
+
+PeggyInput.prototype.getCandidatesValues = function (candidates) {
+    return _.map(candidates, 'value');
+};
+
+PeggyInput.prototype.testGrammarCompleterMatches = function (completerName, label) {
+    let match = _.includes(this.getCandidatesLabels(this.completers[completerName].candidates), label);
+    this.logger.debug('Completing', completerName, label, match);
     if (!match) {
-        this.setPartialInput(value);
+        this.setPartialInput(label);
     }
     return match;
 };
 
+/* Build an index for completion candidates */
+PeggyInput.prototype.buildCandidatesIndex = function (completerName, completer) {
+    let index = new Map();
+
+    _.forEach(completer.candidates, function (candidate) {
+        index.set(candidate.label, candidate.value);
+    });
+
+    this.candidatesIndex[completerName] = index;
+};
+
+/* Return value of the completion from its label */
+PeggyInput.prototype.getCandidateValue = function (completerName, label) {
+    return this.candidatesIndex[completerName].get(label);
+};
+
 PeggyInput.prototype.expandCompletionRule = function (completerName) {
-    return `${completerName} "${completerName}" = ${completerName}:(${this.completers[completerName].rule}) &{ return options.peggyInput._grammarCompleter("${completerName}", ${completerName}) } { return ${completerName} }`;
+    return `${completerName} "${completerName}" = ${completerName}:(${this.completers[completerName].rule}) &{ return options.peggyInput.testGrammarCompleterMatches("${completerName}", ${completerName}) } { return options.peggyInput.getCandidateValue("${completerName}", ${completerName}) }`;
 }
 
+/* Normalize an array of completion candidates to an array of objects with label and value members */
+PeggyInput.prototype.normalizeCandidates = function (candidates) {
+    if (!_.isArray(candidates)) {
+        return candidates;
+    }
+
+    if (_.isEmpty(candidates)) {
+        return candidates;
+    }
+
+    if (_.isString(candidates[0])) {
+        /* An array of strings. Normalize to an object with label and value. */
+        return _.map(candidates, function (label) {
+            return {'label':label, 'value':label};
+        });
+    }
+
+    /* Otherwise, assume an array of objects with label and value.*/
+    /* TODO: check? */
+    return candidates;
+};
+
+/* Initialization function */
 PeggyInput.prototype.init = function (inputSel, opts) {
 
     let inputEl = $(inputSel);
@@ -25827,7 +25875,7 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     };
 
     opts = _.defaults(opts, defaultOptions);
-    
+
     this.logger.debug('Grammar', opts.grammar);
     this.grammar = opts.grammar;
     this.completers = opts.completers;
@@ -25840,6 +25888,14 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     Object.keys(this.completers).forEach(function (completerName) {
         this.grammar += "\n";
         this.grammar += this.expandCompletionRule(completerName);
+    }.bind(this));
+
+    /* Normalize completion candidates */
+    Object.keys(this.completers).forEach(function (completerName) {
+        let completer = this.completers[completerName];
+        completer.candidates = this.normalizeCandidates(completer.candidates);
+        /* Build a reverse index for candidates, from label to value */
+        this.buildCandidatesIndex(completerName, completer);
     }.bind(this));
 
     this.logger.debug('Expanded grammar', this.grammar);
