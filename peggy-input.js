@@ -55,7 +55,7 @@ PeggyInput.prototype.formatErrorMsg = function () {
 
 PeggyInput.prototype.updateStatus = function () {
 
-    if (!this.input.val() && !this.validateWhenBlank) {
+    if (this.input.val() || this.validateWhenBlank) {
         this.value = null;
         this.error = null;
         this.syntaxErrorMsg.html('');
