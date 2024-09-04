@@ -25521,6 +25521,8 @@ const _ = require('lodash');
 const peggy = require('peggy');
 const loglevel = require('loglevel');
 
+/* Utilities */
+
 // Extension for getting cursor position in input field
 $.fn.getCursorPosition = function() {
     var input = this.get(0);
@@ -25549,6 +25551,7 @@ function insertString(str, insertStr, position) {
     return str.substring(0, position) + insertStr + str.substring(position);
 }
 
+/* PeggyInput object */
 function PeggyInput(input, opts) {
     this.logger = loglevel.getLogger('peggy-input');
     this.partialInput = null;
@@ -25559,8 +25562,21 @@ function PeggyInput(input, opts) {
     return this;
 }
 
+/* API */
 PeggyInput.prototype.isValid = function () {
     return this.error == null;
+};
+
+PeggyInput.prototype.getValue = function () {
+    return this.value;
+};
+
+PeggyInput.prototype.getError = function () {
+    return this.error;
+};
+
+PeggyInput.prototype.getInput = function () {
+    return this.input.get(0);
 };
 
 PeggyInput.prototype.formatErrorMsg = function () {
@@ -25571,6 +25587,7 @@ PeggyInput.prototype.formatErrorMsg = function () {
     }
 };
 
+/* Update the status of the PeggyInput based on the current input value */
 PeggyInput.prototype.updateStatus = function () {
 
     if (!this.input.val() && !this.validateWhenBlank) {
@@ -25609,24 +25626,12 @@ PeggyInput.prototype.updateStatus = function () {
     }
 };
 
-PeggyInput.prototype.getValue = function () {
-    return this.value;
-};
-
-PeggyInput.prototype.getError = function () {
-    return this.error;
-};
-
 /* Destroy the PeggyInput instance */
 PeggyInput.prototype.destroy = function () {
     this.syntaxErrorMsg.remove();
     this.completionsArea.remove();
     this.syntaxErrorMsg = null;
     this.completionsArea = null;
-};
-
-PeggyInput.prototype.getInput = function () {
-    return this.input.get(0);
 };
 
 PeggyInput.prototype.complete = function (input) {
@@ -25699,6 +25704,7 @@ PeggyInput.prototype.complete = function (input) {
     return {error:null, completions: []};
 };
 
+/* Fill the completions area with completions candidates */
 PeggyInput.prototype.fillCompletions = function (completions) {
     var html = '';
     completions.forEach(function (completion) {
@@ -25707,6 +25713,7 @@ PeggyInput.prototype.fillCompletions = function (completions) {
     this.completionsArea.html(html);
 };
 
+/* Update the completion area. Fill and also show or hide. */
 PeggyInput.prototype.updateCompletions = function () {
     this.logger.debug('Updating completions');
     this.completionsArea.html('');
@@ -25720,6 +25727,8 @@ PeggyInput.prototype.updateCompletions = function () {
     }
 };
 
+/* A partial input is the input that the user entered, but that doesn't match the completion rule, yet. */
+/* For example, in a 'username' completion rule position, the partial input is part of the username entered, but that is not complete, yet. */
 PeggyInput.prototype.setPartialInput = function (pinput) {
     // For setting the partial input, check that the input matches
     // input value at cursor position (what the user is entering).
@@ -25824,6 +25833,8 @@ PeggyInput.prototype.testGrammarCompleterMatches = function (completerName, labe
 };
 
 /* Build an index for completion candidates */
+/* The index has candidate labels as keys and candidate values as values */
+/* This is used from the grammar blocks to return the completion value of the selected completion */
 PeggyInput.prototype.buildCandidatesIndex = function (completerName, completer) {
     let index = new Map();
 
@@ -25873,10 +25884,12 @@ PeggyInput.prototype.normalizeCandidates = function (candidates) {
     return candidates;
 };
 
+/* Get an array of candidates depending on how candidates were specified */
 PeggyInput.prototype.resolveCandidates = function (candidates) {
+    /* If a function, evaluate it. Expect a Promise */
     if (_.isFunction(candidates)) {
         return candidates();
-    } else if (_.isString(candidates)) {
+    } else if (_.isString(candidates)) { /* If a string, treat as url and fetch */
         return fetch(candidates)
             .then(res => res.json());
     } else if (_.isArray(candidates)) {
@@ -25977,12 +25990,5 @@ PeggyInput.prototype.initUI = function (opts) {
 window.PeggyInput = function(inputEl, opts) {
     return new PeggyInput(inputEl, opts);
 }
-
-// JQuery wrapper
-
-$.fn.stxInput = function (opts) {
-    var inst = this.get(0);
-    return new PeggyInput($(inst), opts);
-};
 
 },{"jquery-slim":1,"lodash":2,"loglevel":3,"peggy":4}]},{},[5]);
