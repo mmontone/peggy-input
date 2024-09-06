@@ -18,8 +18,8 @@ The Peggy grammar is expanded using the completers object.
 Example:
 
 ```javascript
-let users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
-let groups = ['Management', 'Administration', 'Human Resources'];
+const users = ['Mariano Montone', 'Asgeir Bjørlykke', 'Martin Montone'];
+const groups = ['Management', 'Administration', 'Human Resources'];
 
 ({
     'completers': {
@@ -105,8 +105,8 @@ Create an HTML input element:
 Instantiate a PeggyInput passing the grammar and completers as options:
 
 ```javascript
-var users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone', 'Fernando Berretti'];
-var groups = ['Management', 'Administration', 'Human Resources'];
+const users = ['Mariano Montone', 'Asgeir Bjorlykke', 'Martin Montone', 'Fernando Berretti'];
+const groups = ['Management', 'Administration', 'Human Resources'];
 PeggyInput('#input',
           {
               'grammar': grammar,
