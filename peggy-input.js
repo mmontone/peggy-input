@@ -116,6 +116,7 @@ PeggyInput.prototype.destroy = function () {
     this.completionsArea = null;
 };
 
+/* The main function for providing the completions to the user */
 PeggyInput.prototype.complete = function (input) {
 
     try {
@@ -149,11 +150,21 @@ PeggyInput.prototype.complete = function (input) {
 
         this.logger.debug('Completions', completions);
 
+        /* When the input matches a completer rule, expand the completion candidates */
         var expandedCompletions = [];
         completions.forEach(function (completion) {
             let completer = this.completers[completion];
-            if (completer) {
-                expandedCompletions = expandedCompletions.concat(this.getCandidatesLabels(completer.candidates));
+            if (completer) { /* There's a completer for the completion. Expand candidates */
+                let completionsCharCount = _.defaultTo(completer.charCount, this.completionsCharCount);
+                
+                if (completionsCharCount > 0) {
+                    if (this.partialInput && this.partialInput.length >= completionsCharCount) {
+                        expandedCompletions = expandedCompletions.concat(this.getCandidatesLabels(completer.candidates));
+                    }
+                }
+                else {
+                    expandedCompletions = expandedCompletions.concat(this.getCandidatesLabels(completer.candidates));
+                }
             } else {
                 expandedCompletions = expandedCompletions.concat([completion]);
             }
@@ -388,7 +399,8 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.input = inputEl;
     let defaultOptions = {
         showSyntaxErrorMsg: true,
-        validateWhenBlank: inputEl.get(0).required
+        validateWhenBlank: inputEl.get(0).required,
+        completionsCharCount : 0
     };
 
     opts = _.defaults(opts, defaultOptions);
@@ -399,6 +411,7 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.changeHandler = opts.onChange;
     this.errorMsgFormatter = opts.errorMsgFormatter;
     this.validateWhenBlank = opts.validateWhenBlank;
+    this.completionsCharCount = opts.completionsCharCount;
 
     inputEl.change(this.updateStatus.bind(this));
 

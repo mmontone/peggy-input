@@ -51,13 +51,17 @@ When one of those rules match, they are completed using the specified candidates
 - `onChange`: Function. Optional. A function handler that is invoked with the PeggyInput instance as argument when there's a change.
 - `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return a string used a error message.
 - `validateWhenBlank`: Boolean. Optional. Default is true iff the input is required. Whether to validate the input and show an error when the input is blank.
+- `completionsCharCount`: Integer. Optional. Default is 0. The number of characters needed from the user to expand the list of completions candidates.
 
-### Completion candidates sources
+#### Completer object
 
-- An array of strings.
-- An array of objects with `label` and `value` members.
-- A string with an url from where to `fetch` the candidates.
-- A function. Takes current entered prefix string and a PeggyInstance, and should return a Promise with a list of strings filtered by the prefix.
+- `rule` : The Peggy rule to match the completion.
+- `candidates`: 
+   * An array of strings.
+   * An array of objects with `label` and `value` members.
+   * A string with an url from where to `fetch` the candidates.
+   * A function. Takes current entered prefix string and a PeggyInstance, and should return a Promise with a list of strings filtered by the prefix.
+- `charCount`: Integer. Optional. Default is `compmletionsCharCount`. The number of characters needed from the user to expand the list of the completion's candidates.
 
 ### API
 

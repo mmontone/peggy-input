@@ -1,0 +1,40 @@
+<pidata>
+<name>Specify completions character count option</name>
+<description>
+A mini language for assignments of users and cities.
+The data for completion of users and cities are fetched from a url.
+Specifies the number of characters before showing the completion candidate list.
+</description>
+<grammar>
+start = assignment
+assignmentcity = "everyone" / citycitizens
+assignment = g:assignmentcity " " "but " as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / citycitizens
+assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
+citycitizens = "citizens of " cities:cities { return {'citizensOf':cities} }
+cities = g:city WS "," WS gs:cities { return [g].concat(gs) } / g:city { return [g] }
+user = "@" username:username { return {'user':username} }
+WS = [ \t]*
+word = !"but" cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
+name = word:word " " name:name { return word + " " + name } / word
+</grammar>
+<initialize>
+({
+   'completers': {
+        'username' : {
+           'rule' : 'name',
+           'candidates' : 'usernames.json',
+           'charCount': 1
+        },
+        'city' : {
+           'rule' : 'name',
+           'candidates' : 'cities.json',
+           'charCount': 1
+        }
+    }
+})
+</initialize>
+<examples>
+<example>everyone but @Adam Anderson</example><example>everyone but citizens of Dijon</example><example>citizens of Deurningen but @Abigail Abraham, @Petko Miljković</example>
+</examples>
+</pidata>
