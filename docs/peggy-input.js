@@ -25674,13 +25674,9 @@ PeggyInput.prototype.complete = function (input) {
             let completer = this.completers[completion];
             if (completer) { /* There's a completer for the completion. Expand candidates */
                 let completionsCharCount = _.defaultTo(completer.charCount, this.completionsCharCount);
-                
-                if (completionsCharCount > 0) {
-                    if (this.partialInput && this.partialInput.length >= completionsCharCount) {
-                        expandedCompletions = expandedCompletions.concat(this.getCandidatesLabels(completer.candidates));
-                    }
-                }
-                else {
+
+                /* Only expand if completions characters count is enough */
+                if (!(completionsCharCount > 0) || (this.partialInput && this.partialInput.length >= completionsCharCount)) {
                     expandedCompletions = expandedCompletions.concat(this.getCandidatesLabels(completer.candidates));
                 }
             } else {
