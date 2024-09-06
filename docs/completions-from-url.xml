@@ -1,8 +1,8 @@
 <pidata>
-<name>Fetch candidates using functions</name>
+<name>Fetch candidates from an url</name>
 <description>
 A mini language for assignments of users and cities.
-    The data for completion of users and cities are fetched from a url.
+The data for completion of users and cities are fetched from a url.
 </description>
 <grammar>
 start = assignment
