@@ -51,7 +51,7 @@ When one of those rules match, they are completed using the specified candidates
 - `onChange`: Function. Optional. A function handler that is invoked with the PeggyInput instance as argument when there's a change.
 - `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return a string used a error message.
 - `validateWhenBlank`: Boolean. Optional. Default is true iff the input is required. Whether to validate the input and show an error when the input is blank.
-- `completionsCharCount`: Integer. Optional. Default is 0. The number of characters needed from the user to expand the list of completions candidates.
+- `completionsCharCount`: Integer. Optional. Default is 0. The number of characters needed from the user to expand the list of completions candidates. Useful for when the number of completion candidates to filter out is big.
 
 #### Completer object
 
