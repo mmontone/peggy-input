@@ -28,6 +28,62 @@ $.fn.setCursorPosition = function (pos) {
     input.selectionEnd = pos;
 };
 
+// TODO: implement copying from Peggy generate-js.js file
+function classEscape (s) {
+    return s;
+}
+
+function describeExpectation(exp) {
+    switch(exp.type) {
+        case 'literal':
+            return exp.text;; // TODO: escape text
+        case 'class':
+            var escapedParts = exp.parts.map(function(part) {
+                return Array.isArray(part)
+                    ? classEscape(part[0]) + "-" + classEscape(part[1])
+                    : classEscape(part);
+            });
+
+            return "[" + (exp.inverted ? "^" : "") + escapedParts.join("") + "]";
+        case 'any':
+            return "any character";
+        case 'end':
+            return "end of input"
+        case 'other':
+            return exp.description
+    }
+}
+
+function describeExpected(expected) {
+    var descriptions = expected.map(describeExpectation);
+    var i, j;
+
+    descriptions.sort();
+
+    if (descriptions.length > 0) {
+        for (i = 1, j = 1; i < descriptions.length; i++) {
+            if (descriptions[i - 1] !== descriptions[i]) {
+                descriptions[j] = descriptions[i];
+                j++;
+            }
+        }
+        descriptions.length = j;
+    }
+
+    switch (descriptions.length) {
+        case 1:
+            return descriptions[0];
+
+        case 2:
+            return descriptions[0] + " or " + descriptions[1];
+
+        default:
+            return descriptions.slice(0, -1).join(", ")
+                + ", or "
+                + descriptions[descriptions.length - 1];
+    }
+}
+
 /* Insert string at position */
 function insertString(str, insertStr, position) {
     return str.substring(0, position) + insertStr + str.substring(position);
@@ -63,7 +119,12 @@ PeggyInput.prototype.getInput = function () {
 
 PeggyInput.prototype.formatErrorMsg = function () {
     if (this.errorMsgFormatter) {
-        return this.errorMsgFormatter(this, this.getError());
+        if (this.errorMsgFormatter === 'describeExpected') {
+            let expected = this.getError().expected;
+            return 'Enter: ' + describeExpected(expected);
+        } else {
+            return this.errorMsgFormatter(this, this.getError());
+        }
     } else {
         return this.getError().message;
     }
