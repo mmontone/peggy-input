@@ -26025,7 +26025,7 @@ PeggyInput.prototype.initUI = function (opts) {
 
     this.parser = peggy.generate(this.grammar);
 
-    this.syntaxErrorMsg = $('<div class="syntax-error" style="color: red; font-size: 10px;"></div>');
+    this.syntaxErrorMsg = $('<div class="syntax-error" style="color: red; font-size: 10px; position: absolute;"></div>');
     if (!opts.showSyntaxErrorMsg) {
         this.syntaxErrorMsg.hide();
     }
@@ -26034,6 +26034,8 @@ PeggyInput.prototype.initUI = function (opts) {
     let completionsAreaSize = _.defaultTo(opts.completionsAreaSize, 10);
     let completionsAreaWidth = _.defaultTo(opts.completionsAreaWidth, 400);
     this.completionsArea = $(`<select size=${completionsAreaSize} style="width: ${completionsAreaWidth}px;position:absolute;display:block;">`);
+    this.completionsArea.css('left', this.input.position().left);
+    this.syntaxErrorMsg.css('left', this.input.position().left);
     this.completionsArea.hide();
     this.completionsArea.insertAfter(this.syntaxErrorMsg);
     this.completionsArea.change((ev) => {
