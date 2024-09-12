@@ -25546,6 +25546,7 @@ $.fn.setCursorPosition = function (pos) {
     input.selectionEnd = pos;
 };
 
+// TODO: implement copying from Peggy generate-js.js file
 function classEscape (s) {
     return s;
 }
@@ -26029,7 +26030,10 @@ PeggyInput.prototype.initUI = function (opts) {
         this.syntaxErrorMsg.hide();
     }
     this.syntaxErrorMsg.insertAfter(this.input);
-    this.completionsArea = $('<select size=10 style="width: 400px;position:absolute;display:block;">');
+
+    let completionsAreaSize = _.defaultTo(opts.completionsAreaSize, 10);
+    let completionsAreaWidth = _.defaultTo(opts.completionsAreaWidth, 400);
+    this.completionsArea = $(`<select size=${completionsAreaSize} style="width: ${completionsAreaWidth}px;position:absolute;display:block;">`);
     this.completionsArea.hide();
     this.completionsArea.insertAfter(this.syntaxErrorMsg);
     this.completionsArea.change((ev) => {
