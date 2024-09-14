@@ -1,5 +1,8 @@
-const $ = require('jquery-slim');
-const _ = require('lodash');
+//const $ = require('jquery-slim');
+//const _ = require('lodash');
+// Use minified module versions to reduce build size
+const $ = require('./node_modules/jquery-slim/dist/jquery.slim.min.js');
+const _ = require('./node_modules/lodash/lodash.min.js');
 const peggy = require('peggy');
 const loglevel = require('loglevel');
 
