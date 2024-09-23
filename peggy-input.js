@@ -145,8 +145,8 @@ PeggyInput.prototype.updateStatus = function () {
         return;
     }
 
-    
-    /* To determine the status, try to parse current input */ 
+
+    /* To determine the status, try to parse current input */
     try {
         this.syntaxErrorMsg.html('');
         this.value = this.parser.parse(this.input.val(), {
@@ -154,8 +154,8 @@ PeggyInput.prototype.updateStatus = function () {
         });
         this.error = null;
         this.input.removeClass('error');
-        if (this.input.get(0).willValidate) {
-            this.input.get(0).setCustomValidity('');
+        if (this.getInput().willValidate) {
+            this.getInput().setCustomValidity('');
         }
     }
     catch (syntaxError) {
@@ -165,8 +165,8 @@ PeggyInput.prototype.updateStatus = function () {
         let errorMsg = this.formatErrorMsg();
         this.syntaxErrorMsg.html(errorMsg);
         this.input.addClass('error');
-        if (this.input.get(0).willValidate) {
-            this.input.get(0).setCustomValidity(errorMsg);
+        if (this.getInput().willValidate) {
+            this.getInput().setCustomValidity(errorMsg);
         }
     }
 
