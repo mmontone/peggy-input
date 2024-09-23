@@ -63,7 +63,7 @@ When one of those rules match, they are completed using the specified candidates
    * An array of objects with `label` and `value` members.
    * A string with an url from where to `fetch` the candidates.
    * A function. Takes current entered prefix string and a PeggyInstance, and should return a Promise with a list of strings filtered by the prefix.
-- `charCount`: Integer. Optional. Default is `compmletionsCharCount`. The number of characters needed from the user to expand the list of the completion's candidates.
+- `charCount`: Integer. Optional. Default is `completionsCharCount`. The number of characters needed from the user to expand the list of the completion's candidates.
 
 ### API
 
@@ -71,6 +71,14 @@ When one of those rules match, they are completed using the specified candidates
 - `getValue`: Returns the parsed value of the input, unless it is in an error state.
 - `getError`: Returns the current syntax error.
 - `getInput`: Access the HTML input element.
+
+### User interface
+
+A completion area `<select>` and an error message `<p>` elements are added beside the affected input.
+
+Size of completions area can be controlled with `completionsAreaSize` and `completionsAreaWidth` options.
+
+When the input is in an invalid state, it is marked as so, by adding an `error` class to it. Also, [setCustomValidity](https://developer.mozilla.org/en-US/docs/Web/API/HTMLObjectElement/setCustomValidity) is called on the input with the parser error message.
 
 ## Examples
 
