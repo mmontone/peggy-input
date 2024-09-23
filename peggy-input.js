@@ -287,7 +287,7 @@ PeggyInput.prototype.updateCompletions = function () {
 PeggyInput.prototype.setPartialInput = function (pinput) {
     // For setting the partial input, check that the input matches
     // input value at cursor position (what the user is entering).
-    let inputStr = this.input.value.substring(0, this.input.getCursorPosition());
+    let inputStr = this.input.value.substring(0, getCursorPosition(this.input));
     let userStr = inputStr.substring(inputStr.length - pinput.length, inputStr.length);
     if (pinput == userStr) {
         this.logger.debug('Setting partial input:', pinput);
@@ -352,17 +352,21 @@ PeggyInput.prototype.keyDownHandler = function (ev) {
                 this.completionsArea.querySelectorAll('option')[0].selected = 'selected';
             } else {
                 selected.selected = false;
-                selected.nextElementSibling.selected = selected;
+                if (selected.nextElementSibling) {
+                    selected.nextElementSibling.selected = selected;
+                }
             }
             // Prevent cursor from moving to the end
             ev.preventDefault();
             break;
         case 'ArrowUp':
-            if (selected.length == 0) {
+            if (selected === null) {
                 this.completionsArea.querySelectorAll('option')[0].selected = 'selected';
             } else {
                 selected.selected = false;
-                selected.previousElementSibling.selected = selected;
+                if (selected.previousElementSibling) {
+                    selected.previousElementSibling.selected = selected;
+                }
             }
             // Prevent cursor from moving to the beginning
             ev.preventDefault();
