@@ -116,7 +116,7 @@ PeggyInput.prototype.getError = function () {
 };
 
 PeggyInput.prototype.getInput = function () {
-    return this.input.get(0);
+    return this.input;
 };
 
 PeggyInput.prototype.formatErrorMsg = function () {
@@ -186,7 +186,7 @@ PeggyInput.prototype.destroy = function () {
 PeggyInput.prototype.complete = function (input) {
 
     try {
-        this.syntaxErrorMsg.html('');
+        this.syntaxErrorMsg.innerHTML = '';
         this.value = this.parser.parse(input, {
             peggyInput: this
         });
@@ -200,7 +200,7 @@ PeggyInput.prototype.complete = function (input) {
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
 
         if (this.input.value || this.validateWhenBlank) {
-            this.syntaxErrorMsg.html(this.formatErrorMsg());
+            this.syntaxErrorMsg.innerHTML = this.formatErrorMsg();
         }
 
         expected.forEach(function (expectation) {
@@ -517,7 +517,12 @@ PeggyInput.prototype.initUI = function (opts) {
 
     this.parser = peggy.generate(this.grammar);
 
-    this.syntaxErrorMsg = document.createElement('<div class="syntax-error" style="color: red; font-size: 10px; position: absolute;"></div>');
+    this.syntaxErrorMsg = document.createElement('div');
+    this.syntaxErrorMsg.classList.add('syntax-error');
+    this.syntaxErrorMsg.style.color = "red";
+    this.syntaxErrorMsg.style.fontSize = "10px";
+    this.syntaxErrorMsg.style.position = "absolute";
+
     if (!opts.showSyntaxErrorMsg) {
         this.syntaxErrorMsg.style.display = "none";
     }
@@ -525,9 +530,14 @@ PeggyInput.prototype.initUI = function (opts) {
 
     let completionsAreaSize = _.defaultTo(opts.completionsAreaSize, 10);
     let completionsAreaWidth = _.defaultTo(opts.completionsAreaWidth, 400);
-    this.completionsArea = document.createElement(`<select size=${completionsAreaSize} style="width: ${completionsAreaWidth}px;position:absolute;display:block;">`);
-    this.completionsArea.style.left = this.input.style.position.left;
-    this.syntaxErrorMsg.style.left = this.input.style.position.left;
+
+    this.completionsArea = document.createElement('select');
+    this.completionsArea.size = completionsAreaSize;
+    this.completionsArea.style.width = `${completionsAreaWidth}px`;
+    this.completionsArea.style.position = "absolute";
+    this.completionsArea.style.display = "block";
+    this.completionsArea.style.left = this.input.getBoundingClientRect().left;
+    this.syntaxErrorMsg.style.left = this.input.getBoundingClientRect().left;
     this.completionsArea.style.display = "none";
     insertAfter(this.syntaxErrorMsg, this.completionsArea);
     this.completionsArea.addEventListener('change', (ev) => {
