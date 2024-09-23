@@ -136,6 +136,7 @@ PeggyInput.prototype.formatErrorMsg = function () {
 /* Update the status of the PeggyInput based on the current input value */
 PeggyInput.prototype.updateStatus = function () {
 
+    /* If the input is empty and should not be validated */
     if (!this.input.val() && !this.validateWhenBlank) {
         this.value = null;
         this.error = null;
@@ -144,6 +145,8 @@ PeggyInput.prototype.updateStatus = function () {
         return;
     }
 
+    
+    /* To determine the status, try to parse current input */ 
     try {
         this.syntaxErrorMsg.html('');
         this.value = this.parser.parse(this.input.val(), {
