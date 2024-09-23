@@ -859,11 +859,11 @@ PeggyInput.prototype.keyUpHandler = function (ev) {
 };
 
 PeggyInput.prototype.keyDownHandler = function (ev) {
-    let selected = this.completionsArea.children('option:selected');
+    let selected = this.completionsArea.querySelector('option:checked');
     switch(ev.key) {
         case 'ArrowDown':
-            if (selected.length == 0) {
-                this.completionsArea.queryElements('option')[0].selected = 'selected';
+            if (selected === null) {
+                this.completionsArea.querySelectorAll('option')[0].selected = 'selected';
             } else {
                 selected.selected = false;
                 selected.nextElementSibling.selected = selected;
@@ -873,7 +873,7 @@ PeggyInput.prototype.keyDownHandler = function (ev) {
             break;
         case 'ArrowUp':
             if (selected.length == 0) {
-                this.completionsArea.queryElements('option')[0].selected = 'selected';
+                this.completionsArea.querySelectorAll('option')[0].selected = 'selected';
             } else {
                 selected.selected = false;
                 selected.previousElementSibling.selected = selected;
