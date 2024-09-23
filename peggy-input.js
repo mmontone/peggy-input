@@ -1,7 +1,5 @@
-//const $ = require('jquery-slim');
 //const _ = require('lodash');
 // Use minified module versions to reduce build size
-const $ = require('./node_modules/jquery-slim/dist/jquery.slim.min.js');
 const _ = require('./node_modules/lodash/lodash.min.js');
 const peggy = require('peggy');
 const loglevel = require('loglevel');
@@ -9,9 +7,7 @@ const loglevel = require('loglevel');
 /* Utilities */
 
 // Extension for getting cursor position in input field
-$.fn.getCursorPosition = function() {
-    var input = this.get(0);
-    if (!input) return; // No (input) element found
+function getCursorPosition (input) {
     if ('selectionStart' in input) {
         // Standard-compliant browsers
         return input.selectionStart;
@@ -23,13 +19,16 @@ $.fn.getCursorPosition = function() {
         sel.moveStart('character', -input.value.length);
         return sel.text.length - selLen;
     }
-};
+}
 
-$.fn.setCursorPosition = function (pos) {
-    var input = this.get(0);
+function setCursorPosition (input, pos) {
     input.selectionStart = pos;
     input.selectionEnd = pos;
-};
+}
+
+function insertAfter (referenceNode, newNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
 
 // TODO: implement copying from Peggy generate-js.js file
 function classEscape (s) {
@@ -137,23 +136,23 @@ PeggyInput.prototype.formatErrorMsg = function () {
 PeggyInput.prototype.updateStatus = function () {
 
     /* If the input is empty and should not be validated */
-    if (!this.input.val() && !this.validateWhenBlank) {
+    if (!this.input.value && !this.validateWhenBlank) {
         this.value = null;
         this.error = null;
-        this.syntaxErrorMsg.html('');
-        this.completionsArea.hide();
+        this.syntaxErrorMsg.innerHTML = '';
+        this.completionsArea.style.display = "none";
         return;
     }
 
 
     /* To determine the status, try to parse current input */
     try {
-        this.syntaxErrorMsg.html('');
-        this.value = this.parser.parse(this.input.val(), {
+        this.syntaxErrorMsg.innerHTML = '';
+        this.value = this.parser.parse(this.input.value, {
             peggyInput: this
         });
         this.error = null;
-        this.input.removeClass('error');
+        this.input.classList.remove('error');
         if (this.getInput().willValidate) {
             this.getInput().setCustomValidity('');
         }
@@ -163,8 +162,8 @@ PeggyInput.prototype.updateStatus = function () {
         this.value = null;
         this.error = syntaxError;
         let errorMsg = this.formatErrorMsg();
-        this.syntaxErrorMsg.html(errorMsg);
-        this.input.addClass('error');
+        this.syntaxErrorMsg.innerHTML = errorMsg;
+        this.input.classList.add('error');
         if (this.getInput().willValidate) {
             this.getInput().setCustomValidity(errorMsg);
         }
@@ -200,7 +199,7 @@ PeggyInput.prototype.complete = function (input) {
         var completions = [];
         let expected = _.uniqWith(syntaxError.expected, _.isEqual);
 
-        if (this.input.val() || this.validateWhenBlank) {
+        if (this.input.value || this.validateWhenBlank) {
             this.syntaxErrorMsg.html(this.formatErrorMsg());
         }
 
@@ -266,20 +265,20 @@ PeggyInput.prototype.fillCompletions = function (completions) {
     completions.forEach(function (completion) {
         html += `<option value="${completion}">${completion}</option>`;
     });
-    this.completionsArea.html(html);
+    this.completionsArea.innerHTML = html;
 };
 
 /* Update the completion area. Fill and also show or hide. */
 PeggyInput.prototype.updateCompletions = function () {
     this.logger.debug('Updating completions');
-    this.completionsArea.html('');
-    var inputText = this.input.val();
+    this.completionsArea.innerHTML = '';
+    var inputText = this.input.value;
     var completions = this.complete(inputText).completions;
     if (completions.length > 0) {
         this.fillCompletions(completions);
-        this.completionsArea.show();
+        this.completionsArea.style.display = "block";
     } else {
-        this.completionsArea.hide();
+        this.completionsArea.style.display = "none";
     }
 };
 
@@ -288,7 +287,7 @@ PeggyInput.prototype.updateCompletions = function () {
 PeggyInput.prototype.setPartialInput = function (pinput) {
     // For setting the partial input, check that the input matches
     // input value at cursor position (what the user is entering).
-    let inputStr = this.input.val().substring(0, this.input.getCursorPosition());
+    let inputStr = this.input.value.substring(0, this.input.getCursorPosition());
     let userStr = inputStr.substring(inputStr.length - pinput.length, inputStr.length);
     if (pinput == userStr) {
         this.logger.debug('Setting partial input:', pinput);
@@ -297,15 +296,15 @@ PeggyInput.prototype.setPartialInput = function (pinput) {
 };
 
 PeggyInput.prototype.insertCompletion = function (completion) {
-    let cursorPosition = this.input.getCursorPosition();
-    this.input.val(insertString(this.input.val(), completion, cursorPosition));
-    this.input.setCursorPosition(cursorPosition + completion.length);
+    let cursorPosition = getCursorPosition(this.input);
+    this.input.value = insertString(this.input.value, completion, cursorPosition);
+    setCursorPosition(this.input, cursorPosition + completion.length);
     this.updateStatus();
 };
 
 PeggyInput.prototype.selectCompletion = function (completionVal) {
 
-    let inputVal = this.input.val().substring(0, this.input.getCursorPosition());
+    let inputVal = this.input.value.substring(0, getCursorPosition(this.input));
 
     this.logger.debug('Completion selected', completionVal);
 
@@ -339,7 +338,7 @@ PeggyInput.prototype.keyUpHandler = function (ev) {
             // what the user has already entered.
             // For example, if a 'everyone' completion was chosen,
             // and the user already entered 'every', then only append 'one' to the input value
-            this.selectCompletion(this.completionsArea.val());
+            this.selectCompletion(this.completionsArea.value);
             break;
         default: this.updateCompletions();
     }
@@ -350,20 +349,20 @@ PeggyInput.prototype.keyDownHandler = function (ev) {
     switch(ev.key) {
         case 'ArrowDown':
             if (selected.length == 0) {
-                this.completionsArea.children('option').first().attr('selected', 'selected');
+                this.completionsArea.queryElements('option')[0].selected = 'selected';
             } else {
-                selected.attr('selected', false);
-                selected.next().attr('selected','selected');
+                selected.selected = false;
+                selected.nextElementSibling.selected = selected;
             }
             // Prevent cursor from moving to the end
             ev.preventDefault();
             break;
         case 'ArrowUp':
             if (selected.length == 0) {
-                this.completionsArea.children('option').first().attr('selected', 'selected');
+                this.completionsArea.queryElements('option')[0].selected = 'selected';
             } else {
-                selected.attr('selected', false);
-                selected.prev().attr('selected','selected');
+                selected.selected = false;
+                selected.previousElementSibling.selected = selected;
             }
             // Prevent cursor from moving to the beginning
             ev.preventDefault();
@@ -456,13 +455,18 @@ PeggyInput.prototype.resolveCandidates = function (candidates) {
 };
 
 /* Initialization function */
-PeggyInput.prototype.init = function (inputSel, opts) {
+PeggyInput.prototype.init = function (inputElOrSel, opts) {
 
-    let inputEl = $(inputSel);
-    this.input = inputEl;
+    if (_.isString(inputElOrSel)) {
+        this.input = document.querySelector(inputElOrSel);
+    }
+    else {
+        this.input = inputElOrSel;
+    }
+
     let defaultOptions = {
         showSyntaxErrorMsg: true,
-        validateWhenBlank: inputEl.get(0).required,
+        validateWhenBlank: this.input.required,
         completionsCharCount : 0
     };
 
@@ -476,7 +480,7 @@ PeggyInput.prototype.init = function (inputSel, opts) {
     this.validateWhenBlank = opts.validateWhenBlank;
     this.completionsCharCount = opts.completionsCharCount;
 
-    inputEl.change(this.updateStatus.bind(this));
+    this.input.addEventListener('change', this.updateStatus.bind(this));
 
     Object.keys(this.completers).forEach(function (completerName) {
         this.grammar += "\n";
@@ -513,43 +517,43 @@ PeggyInput.prototype.initUI = function (opts) {
 
     this.parser = peggy.generate(this.grammar);
 
-    this.syntaxErrorMsg = $('<div class="syntax-error" style="color: red; font-size: 10px; position: absolute;"></div>');
+    this.syntaxErrorMsg = document.createElement('<div class="syntax-error" style="color: red; font-size: 10px; position: absolute;"></div>');
     if (!opts.showSyntaxErrorMsg) {
-        this.syntaxErrorMsg.hide();
+        this.syntaxErrorMsg.style.display = "none";
     }
-    this.syntaxErrorMsg.insertAfter(this.input);
+    insertAfter(this.input, this.syntaxErrorMsg);
 
     let completionsAreaSize = _.defaultTo(opts.completionsAreaSize, 10);
     let completionsAreaWidth = _.defaultTo(opts.completionsAreaWidth, 400);
-    this.completionsArea = $(`<select size=${completionsAreaSize} style="width: ${completionsAreaWidth}px;position:absolute;display:block;">`);
-    this.completionsArea.css('left', this.input.position().left);
-    this.syntaxErrorMsg.css('left', this.input.position().left);
-    this.completionsArea.hide();
-    this.completionsArea.insertAfter(this.syntaxErrorMsg);
-    this.completionsArea.change((ev) => {
+    this.completionsArea = document.createElement(`<select size=${completionsAreaSize} style="width: ${completionsAreaWidth}px;position:absolute;display:block;">`);
+    this.completionsArea.style.left = this.input.style.position.left;
+    this.syntaxErrorMsg.style.left = this.input.style.position.left;
+    this.completionsArea.style.display = "none";
+    insertAfter(this.syntaxErrorMsg, this.completionsArea);
+    this.completionsArea.addEventListener('change', (ev) => {
         console.log('Select completion!', ev);
-        this.selectCompletion(this.completionsArea.val());
+        this.selectCompletion(this.completionsArea.value);
     });
-    this.completionsArea.on('blur', () => {
-        this.completionsArea.hide();
+    this.completionsArea.addEventListener('blur', () => {
+        this.completionsArea.style.display = "none";
     });
 
-    this.input.on('focus', this.updateCompletions.bind(this));
-    this.input.on('blur', () => {
+    this.input.addEventListener('focus', this.updateCompletions.bind(this));
+    this.input.addEventListener('blur', () => {
         // Don't close the completions area immediatly. We need
         // to give it some time in order to be able to process a possible click event
         // on one of the completion candidates.
         setTimeout(() => {
-            if (!$(document.activeElement).is(this.completionsArea)) {
-                this.completionsArea.hide();
+            if (document.activeElement !== this.completionsArea) {
+                this.completionsArea.style.display = "none";
             }
         }, 200);
     });
-    this.input.keyup(this.keyUpHandler.bind(this));
-    this.input.keydown(this.keyDownHandler.bind(this));
+    this.input.addEventListener('keyup', this.keyUpHandler.bind(this));
+    this.input.addEventListener('keydown', this.keyDownHandler.bind(this));
 };
 
 // Exports
-window.PeggyInput = function(inputEl, opts) {
-    return new PeggyInput(inputEl, opts);
+window.PeggyInput = function(inputElOrSel, opts) {
+    return new PeggyInput(inputElOrSel, opts);
 }
