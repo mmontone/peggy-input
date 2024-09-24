@@ -1,10 +1,8 @@
 - Improve completion of certain lists (for instance, completion of users and groups as user types. Hint: look at partialInput). Bug: partial input of completions that have a space character doesn't work well.
-- Consider dropping JQuery and use native JS ?
-- Completion data with ids? i.e. username + id
 - Check performance for lots of completion candidates. ~10K
 - A way of specifying server-side filtering of completion candidates.
 - Use a typechecking library for validating the api? (https://github.com/gkz/type-check). Check out more advanced zod, joi or yup.
-- When handling lots of completion candidates, it could make sense to show the completion list only after a few characters have been typed, so a filtered list is ensured. This could be specified in global options, or in the completers options.
 - Use NPM instead or Make for building the library and running the demo?
 - Completion matching options. Case-sensitive, prefix matcher, substring matcher, etc.
 - Implement tests. Use webdriver?
+- Make completion case-insensitive.
