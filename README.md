@@ -52,6 +52,7 @@ When one of those rules match, they are completed using the specified candidates
 - `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return a string used a error message.
 - `validateWhenBlank`: Boolean. Optional. Default is true iff the input is required. Whether to validate the input and show an error when the input is blank.
 - `completionsCharCount`: Integer. Optional. Default is 0. The number of characters needed from the user to expand the list of completions candidates. Useful for when the number of completion candidates to filter out is big.
+- `caseSensitive`: Boolean. Optional. Default is false. Complete with case sensitivity or not.
 - `completionsAreaSize`: Integer. Optional. Number of elements to be shown in the completion area at a time. Default is 10. 
 - `completionsAreaWidth`: Integer. Optional. Width of completions area, in pixels. Default is 400.
 

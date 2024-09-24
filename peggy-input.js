@@ -144,7 +144,6 @@ PeggyInput.prototype.updateStatus = function () {
         return;
     }
 
-
     /* To determine the status, try to parse current input */
     try {
         this.syntaxErrorMsg.innerHTML = '';
@@ -183,7 +182,12 @@ PeggyInput.prototype.destroy = function () {
 };
 
 PeggyInput.prototype.matchCompletion = function (completion, input) {
-    return _.startsWith(completion, input);
+    if (this.caseSensitive) {
+        return _.startsWith(completion, input);
+    }
+    else {
+        return _.startsWith(_.toLower(completion), _.toLower(input));
+    }
 };
 
 PeggyInput.prototype.filterCompletions = function (completions, input) {
@@ -244,20 +248,14 @@ PeggyInput.prototype.complete = function (input) {
 
         completions = expandedCompletions;
 
-        this.logger.debug('Expanded Completions', completions);
+        this.logger.debug('Expanded completions', completions);
 
         // Filter the possible options based on what was found unparsed
         // in the syntax error:
+        let filter = this.partialInput || syntaxError.found;
         if (syntaxError.found) {
-            completions = this.filterCompletions(completions, syntaxError.found);
-        }
-
-        this.logger.debug('Partial input', this.partialInput);
-
-        if (this.partialInput) {
-            completions = completions.filter(function (completion) {
-                return _.startsWith(completion, this.partialInput);
-            }.bind(this));
+            completions = this.filterCompletions(completions, filter);
+            this.logger.debug('Filtered completions: ', completions, 'with: ', filter);
         }
 
         this.partialInput = null;
@@ -303,13 +301,21 @@ PeggyInput.prototype.setPartialInput = function (pinput) {
     }
 };
 
-PeggyInput.prototype.insertCompletion = function (completion) {
+/* Insert user selected completion into the input widget */
+/* deleteChars is the number of characters to delete at cursor position */
+PeggyInput.prototype.insertCompletion = function (completion, deleteChars = 0) {
     let cursorPosition = getCursorPosition(this.input);
-    this.input.value = insertString(this.input.value, completion, cursorPosition);
+    let inputStr = this.input.value;
+    if (deleteChars > 0) {
+        inputStr = inputStr.substring(0, cursorPosition - deleteChars) + inputStr.substring(cursorPosition);
+        cursorPosition = cursorPosition - deleteChars;
+    }
+    this.input.value = insertString(inputStr, completion, cursorPosition);
     setCursorPosition(this.input, cursorPosition + completion.length);
     this.updateStatus();
 };
 
+/* The user selected a completion value */
 PeggyInput.prototype.selectCompletion = function (completionVal) {
 
     let inputVal = this.input.value.substring(0, getCursorPosition(this.input));
@@ -317,12 +323,16 @@ PeggyInput.prototype.selectCompletion = function (completionVal) {
     this.logger.debug('Completion selected', completionVal);
 
     // Try to match the completion repeatedly
-    for (let i = Math.max(0, inputVal.length - completionVal.length); i < inputVal.length; i++) {
-        let prefix = inputVal.substr(i, inputVal.length);
-        if (_.startsWith(completionVal, prefix)) {
+    for (let pos = Math.max(0, inputVal.length - completionVal.length); pos < inputVal.length; pos++) {
+        let prefix = inputVal.substr(pos, inputVal.length);
+        let matcher = this.caseSensitive ?
+            _.startsWith :
+            (x, y) => _.startsWith(_.toLower(x), _.toLower(y));
+
+        if (matcher(completionVal, prefix)) {
             // Found a prefix
             // Complete without the prefix
-            this.insertCompletion(completionVal.substr(prefix.length, completionVal.length));
+            this.insertCompletion(completionVal, prefix.length);
             this.updateCompletions();
             return;
         }
@@ -491,6 +501,7 @@ PeggyInput.prototype.init = function (inputElOrSel, opts) {
     this.errorMsgFormatter = opts.errorMsgFormatter;
     this.validateWhenBlank = opts.validateWhenBlank;
     this.completionsCharCount = opts.completionsCharCount;
+    this.caseSensitive = _.defaultTo(opts.caseSensitive, false);
 
     this.input.addEventListener('change', this.updateStatus.bind(this));
 
