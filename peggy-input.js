@@ -352,10 +352,6 @@ PeggyInput.prototype.keyUpHandler = function (ev) {
         case 'ArrowUp':
             break;
         case 'Enter':
-            // When selecting the completion we need to take into account
-            // what the user has already entered.
-            // For example, if a 'everyone' completion was chosen,
-            // and the user already entered 'every', then only append 'one' to the input value
             this.selectCompletion(this.completionsArea.value);
             break;
         default: this.updateCompletions();
