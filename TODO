@@ -5,4 +5,3 @@
 - Use NPM instead or Make for building the library and running the demo?
 - Completion matching options. Case-sensitive, prefix matcher, substring matcher, etc.
 - Implement tests. Use webdriver?
-- Make completion case-insensitive.
