@@ -302,7 +302,7 @@ PeggyInput.prototype.setPartialInput = function (pinput) {
 };
 
 /* Insert user selected completion into the input widget */
-/* deleteChars is the number of characters to delete at cursor position */
+/* deleteChars is the number of characters to delete before cursor position */
 PeggyInput.prototype.insertCompletion = function (completion, deleteChars = 0) {
     let cursorPosition = getCursorPosition(this.input);
     let inputStr = this.input.value;
