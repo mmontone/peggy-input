@@ -696,6 +696,16 @@ PeggyInput.prototype.destroy = function () {
     this.completionsArea = null;
 };
 
+PeggyInput.prototype.matchCompletion = function (completion, input) {
+    return _.startsWith(completion, input);
+};
+
+PeggyInput.prototype.filterCompletions = function (completions, input) {
+    return completions.filter(function (completion) {
+        return this.matchCompletion(completion, input);
+    }.bind(this));
+};
+
 /* The main function for providing the completions to the user */
 PeggyInput.prototype.complete = function (input) {
 
@@ -753,9 +763,7 @@ PeggyInput.prototype.complete = function (input) {
         // Filter the possible options based on what was found unparsed
         // in the syntax error:
         if (syntaxError.found) {
-            completions = completions.filter(function (completion) {
-                return _.startsWith(completion, syntaxError.found);
-            }.bind(this));
+            completions = this.filterCompletions(completions, syntaxError.found);
         }
 
         this.logger.debug('Partial input', this.partialInput);
