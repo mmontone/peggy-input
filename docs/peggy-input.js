@@ -736,11 +736,15 @@ PeggyInput.prototype.complete = function (input) {
                 case 'literal':
                     completions.push(expectation.text);
                     break;
+                case 'class':
+                    completions = completions.concat(expectation.parts);
                 case 'other':
                     completions.push(expectation.description);
                     break;
             }
         });
+
+        _.remove(completions, (x) => _.isUndefined(x) || x == " " || x == "\t");
 
         this.logger.debug('Completions', completions);
 
@@ -816,7 +820,7 @@ PeggyInput.prototype.setPartialInput = function (pinput) {
 };
 
 /* Insert user selected completion into the input widget */
-/* deleteChars is the number of characters to delete at cursor position */
+/* deleteChars is the number of characters to delete before cursor position */
 PeggyInput.prototype.insertCompletion = function (completion, deleteChars = 0) {
     let cursorPosition = getCursorPosition(this.input);
     let inputStr = this.input.value;
@@ -866,10 +870,6 @@ PeggyInput.prototype.keyUpHandler = function (ev) {
         case 'ArrowUp':
             break;
         case 'Enter':
-            // When selecting the completion we need to take into account
-            // what the user has already entered.
-            // For example, if a 'everyone' completion was chosen,
-            // and the user already entered 'every', then only append 'one' to the input value
             this.selectCompletion(this.completionsArea.value);
             break;
         default: this.updateCompletions();

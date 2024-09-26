@@ -222,11 +222,15 @@ PeggyInput.prototype.complete = function (input) {
                 case 'literal':
                     completions.push(expectation.text);
                     break;
+                case 'class':
+                    completions = completions.concat(expectation.parts);
                 case 'other':
                     completions.push(expectation.description);
                     break;
             }
         });
+
+        _.remove(completions, (x) => _.isUndefined(x) || x == " " || x == "\t");
 
         this.logger.debug('Completions', completions);
 
