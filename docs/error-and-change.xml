@@ -1,0 +1,48 @@
+<pidata>
+<name>Custom error message and change handler</name>
+<description>
+  A mini language for assignments of users and groups, using values.
+  This example exemplifies the use of a custom error message and a change handler function.
+</description>
+<grammar>
+start = assignment
+assignmentgroup = "everyone" / groupmembers
+assignment = g:assignmentgroup " " "but " as:assignees { return [g, {'not': as}] } / assignees
+assignee = "everyone" / user / groupmembers
+assignees = a:assignee WS "," WS as:assignees { return [a].concat(as) } / a:assignee { return [a] }
+groupmembers = "members of " groups:groups { return {'membersOf':groups} }
+groups = g:group WS "," WS gs:groups { return [g].concat(gs) } / g:group { return [g] }
+user = "@" username:username { return {'user':username} }
+WS = [ \t]*
+word = !"but" cs:(![ ,@] .)+ { return cs.map(c => c[1]).join('') }
+name = word:word " " name:name { return word + " " + name } / w:word { return w }
+</grammar>
+<initialize>
+let users = [{label:'Mariano Montone', value:1}, 
+             {label:'Asgeir Bjørlykke', value: 2},
+             {label:'Martin Montone', value: 3}];
+let groups = [{label: 'Management', value: 1},
+              {label: 'Administration', value: 2},
+              {label: 'Human Resources', value: 3}];
+
+
+({  'onChange': function() {console.log('changed'); },
+    'errorMsgFormatter': function (peggyInput, err) {
+       return 'Syntaksfeil. Forventet: ' + peggyInput.getExpectedDescription();
+    },              
+    'completers': {
+       'username' : {
+           'rule' : 'name',
+           'candidates' : users
+       },
+       'group' : {
+          'rule' : 'name',
+          'candidates' : groups
+       }
+    }
+})
+</initialize>
+<examples>
+<example>everyone but @Mariano Montone</example><example>members of Management, @Asgeir Bjørlykke</example><example>members of Administration but members of Human Resources, @Martin Montone</example>
+</examples>
+</pidata>

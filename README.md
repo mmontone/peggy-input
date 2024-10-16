@@ -49,7 +49,7 @@ When one of those rules match, they are completed using the specified candidates
 - `completers`: Object. Required. Object with keys being the completer name, and value an object with `rule` and `candidates`. `rule` is the name of the Peggy rule to create.
 - `showSyntaxErrorMsg`: Boolean. Optional. Default is `true`. When enabled show the syntax errors below the HTML input.
 - `onChange`: Function. Optional. A function handler that is invoked with the PeggyInput instance as argument when there's a change.
-- `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return a string used a error message.
+- `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return an error message string. `getExpectedDescription` could be useful to implement this function (see API below).
 - `validateWhenBlank`: Boolean. Optional. Default is true iff the input is required. Whether to validate the input and show an error when the input is blank.
 - `completionsCharCount`: Integer. Optional. Default is 0. The number of characters needed from the user to expand the list of completions candidates. Useful for when the number of completion candidates to filter out is big.
 - `caseSensitive`: Boolean. Optional. Default is false. Complete with case sensitivity or not.
@@ -72,6 +72,7 @@ When one of those rules match, they are completed using the specified candidates
 - `getValue`: Returns the parsed value of the input, unless it is in an error state.
 - `getError`: Returns the current syntax error.
 - `getInput`: Access the HTML input element.
+- `getExpectedDescription`: Returns a description for the current syntax error.
 
 ### User interface
 

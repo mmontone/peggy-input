@@ -147,11 +147,15 @@ ${examples}
                   .then(options =>
                       {
                           options.grammar = $('#grammar').val();
+                          let userChangeHandler = options.onChange;
                           options.onChange = function (peggyInput) {
                               if (peggyInput.isValid()) {
                                   $('#result').val(JSON.stringify(peggyInput.getValue()));
                               } else {
                                   $('#result').val(peggyInput.getError().message);
+                              }
+                              if (userChangeHandler) {
+                                  userChangeHandler();
                               }
                           };
                           window.peggyInput = PeggyInput('#input', options);

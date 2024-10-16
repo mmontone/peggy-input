@@ -119,14 +119,14 @@ PeggyInput.prototype.getInput = function () {
     return this.input;
 };
 
+PeggyInput.prototype.getExpectedDescription = function () {
+    let expected = this.getError().expected;
+    return describeExpected(expected);
+}
+
 PeggyInput.prototype.formatErrorMsg = function () {
     if (this.errorMsgFormatter) {
-        if (this.errorMsgFormatter === 'describeExpected') {
-            let expected = this.getError().expected;
-            return 'Enter: ' + describeExpected(expected);
-        } else {
-            return this.errorMsgFormatter(this, this.getError());
-        }
+        return this.errorMsgFormatter(this, this.getError());
     } else {
         return this.getError().message;
     }
@@ -169,6 +169,7 @@ PeggyInput.prototype.updateStatus = function () {
     }
 
     if (this.changeHandler) {
+        this.logger.debug('Triggering change handler');
         this.changeHandler(this);
     }
 };
