@@ -1018,7 +1018,8 @@ PeggyInput.prototype.init = function (inputElOrSel, opts) {
     this.completionsCharCount = opts.completionsCharCount;
     this.caseSensitive = _.defaultTo(opts.caseSensitive, false);
 
-    this.input.addEventListener('change', this.updateStatus.bind(this));
+    let updateEvent = _.defaultTo(opts.updateEvent, 'change');
+    this.input.addEventListener(updateEvent, this.updateStatus.bind(this));
 
     Object.keys(this.completers).forEach(function (completerName) {
         this.grammar += "\n";

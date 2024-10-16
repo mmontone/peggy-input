@@ -47,6 +47,7 @@ When one of those rules match, they are completed using the specified candidates
 
 - `grammar`: String. Required. The Peggy grammar.
 - `completers`: Object. Required. Object with keys being the completer name, and value an object with `rule` and `candidates`. `rule` is the name of the Peggy rule to create.
+- `updateEvent`. String. Optional. The event for when the widget updates its status. By default, 'change' event is used. If you need a more instantanious widget, it is possible to use 'keyup' instead.
 - `showSyntaxErrorMsg`: Boolean. Optional. Default is `true`. When enabled show the syntax errors below the HTML input.
 - `onChange`: Function. Optional. A function handler that is invoked with the PeggyInput instance as argument when there's a change.
 - `errorMsgFormatter`. Function. Optional. A function that takes a PeggyInput instance and a Peggy SyntaxError and should return an error message string. `getExpectedDescription` could be useful to implement this function (see API below).

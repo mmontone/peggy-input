@@ -3,6 +3,7 @@
 <description>
   A mini language for assignments of users and groups, using values.
   This example exemplifies the use of a custom error message and a change handler function.
+  Note the use of updateEvent, onChange, and errorMsgFormatter options.
 </description>
 <grammar>
 start = assignment
@@ -26,7 +27,8 @@ let groups = [{label: 'Management', value: 1},
               {label: 'Human Resources', value: 3}];
 
 
-({  'onChange': function() {console.log('changed'); },
+({  'updateEvent': 'keyup',
+    'onChange': function() {console.log('changed'); },
     'errorMsgFormatter': function (peggyInput, err) {
        return 'Syntaksfeil. Forventet: ' + peggyInput.getExpectedDescription();
     },              
