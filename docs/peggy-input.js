@@ -655,7 +655,7 @@ PeggyInput.prototype.updateStatus = function () {
         this.value = null;
         this.error = null;
         this.syntaxErrorMsg.innerHTML = '';
-        this.completionsArea.style.display = "none";
+        this.input.classList.remove('error');
         return;
     }
 
