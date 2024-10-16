@@ -119,10 +119,11 @@ PeggyInput.prototype.getInput = function () {
     return this.input;
 };
 
-PeggyInput.prototype.getExpectedDescription = function () {
-    let expected = this.getError().expected;
+PeggyInput.prototype.getExpectedDescription = function (err) {
+    let syntaxError = err || this.getError();
+    let expected = syntaxError.expected;
     return describeExpected(expected);
-}
+};
 
 PeggyInput.prototype.formatErrorMsg = function () {
     if (this.errorMsgFormatter) {
@@ -566,7 +567,6 @@ PeggyInput.prototype.initUI = function (opts) {
     this.completionsArea.style.display = "none";
     insertAfter(this.syntaxErrorMsg, this.completionsArea);
     this.completionsArea.addEventListener('change', (ev) => {
-        console.log('Select completion!', ev);
         this.selectCompletion(this.completionsArea.value);
     });
     this.completionsArea.addEventListener('blur', () => {

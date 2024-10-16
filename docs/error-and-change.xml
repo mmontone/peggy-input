@@ -30,7 +30,7 @@ let groups = [{label: 'Management', value: 1},
 ({  'updateEvent': 'keyup',
     'onChange': function() {console.log('changed'); },
     'errorMsgFormatter': function (peggyInput, err) {
-       return 'Syntaksfeil. Forventet: ' + peggyInput.getExpectedDescription();
+       return 'Syntaksfeil. Forventet: ' + peggyInput.getExpectedDescription(err);
     },              
     'completers': {
        'username' : {
