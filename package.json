@@ -1,16 +1,22 @@
 {
-  "name": "completion-widget",
-  "version": "1.0.0",
-  "description": "Widget that supports completion from a grammar",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Mariano Montone",
-  "license": "ISC",
-  "dependencies": {
-    "lodash": "^4.17.21",
-    "loglevel": "^1.9.1",
-    "peggy": "^4.0.3"
-  }
+    "name": "completion-widget",
+    "version": "1.0.0",
+    "description": "Widget that supports completion from a grammar",
+    "source": "peggy-input.js",
+    "main": "dist/peggy-input.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "watch": "parcel watch",
+        "build": "parcel build"
+    },
+    "author": "Mariano Montone",
+    "license": "ISC",
+    "dependencies": {
+        "lodash": "^4.17.21",
+        "loglevel": "^1.9.1",
+        "peggy": "^4.0.3"
+    },
+    "devDependencies": {
+        "parcel": "^2.13.0"
+    }
 }
