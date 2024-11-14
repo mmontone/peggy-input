@@ -11,7 +11,7 @@
         "demo": "npx http-server docs"
     },
     "author": "Mariano Montone",
-    "license": "ISC",
+    "license": "MIT",
     "dependencies": {
         "lodash": "^4.17.21",
         "loglevel": "^1.9.1",
